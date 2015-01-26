@@ -1,0 +1,14 @@
+{
+  "name": "juice-di",
+  "version": "0.0.1",
+  "description": "A lightweight DI for node.js/express applications",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "author": "Dennis Saenger <npm15@mail.ds82.de>",
+  "license": "MIT",
+  "devDependencies": {
+    "6to5": "^2.13.7"
+  }
+}
