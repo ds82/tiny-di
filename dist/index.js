@@ -5,6 +5,10 @@ var _prototypeProperties = function (child, staticProps, instanceProps) {
   if (instanceProps) Object.defineProperties(child.prototype, instanceProps);
 };
 
+/**
+ * @ngdoc overview
+ * @name de.ds82.juice
+ */
 var Juice = (function () {
   function Juice() {
     this.bindings = {};

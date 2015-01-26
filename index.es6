@@ -1,3 +1,7 @@
+/**
+ * @ngdoc overview
+ * @name de.ds82.juice
+ */
 class Juice {
   constructor() {
     this.bindings = {};
