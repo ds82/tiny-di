@@ -1,6 +1,6 @@
 /**
  * @ngdoc overview
- * @name de.ds82.tinydi
+ * @name de.ds82.juice
  */
 
 class TinyDi {
@@ -10,6 +10,10 @@ class TinyDi {
     this.resolverFn = function(file){
       return require(file);
     };
+  }
+
+  hasBinding(key) {
+    return !!this.bindings[key];
   }
 
   setResolver(resolverFn) {
@@ -30,6 +34,11 @@ class TinyDi {
 
   lazy(key) {
     key = this.layzBindings[key] || key;
+
+    if (this.hasBinding(key)) {
+      return this.get(key);
+    }
+
     var resolved = this.resolverFn(key);
 
     if (resolved) {
@@ -74,9 +83,11 @@ class Binding {
   }
 
   load(file) {
-    this.injector.set(this.key, this.injector.lazy(file));
+    this.injector.set(this.key, this.injector.get(file));
   }
 }
 
 module.exports = TinyDi;
+
+
 

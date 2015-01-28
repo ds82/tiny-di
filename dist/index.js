@@ -7,7 +7,7 @@ var _prototypeProperties = function (child, staticProps, instanceProps) {
 
 /**
  * @ngdoc overview
- * @name de.ds82.tinydi
+ * @name de.ds82.juice
  */
 
 var TinyDi = (function () {
@@ -20,6 +20,14 @@ var TinyDi = (function () {
   }
 
   _prototypeProperties(TinyDi, null, {
+    hasBinding: {
+      value: function hasBinding(key) {
+        return !!this.bindings[key];
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
+    },
     setResolver: {
       value: function setResolver(resolverFn) {
         this.resolverFn = resolverFn;
@@ -55,6 +63,11 @@ var TinyDi = (function () {
     lazy: {
       value: function lazy(key) {
         key = this.layzBindings[key] || key;
+
+        if (this.hasBinding(key)) {
+          return this.get(key);
+        }
+
         var resolved = this.resolverFn(key);
 
         if (resolved) {
@@ -125,7 +138,7 @@ var Binding = (function () {
     },
     load: {
       value: function load(file) {
-        this.injector.set(this.key, this.injector.lazy(file));
+        this.injector.set(this.key, this.injector.get(file));
       },
       writable: true,
       enumerable: true,
