@@ -1,6 +1,6 @@
 /**
  * @ngdoc overview
- * @name de.ds82.juice
+ * @name de.ds82.tinydi
  */
 
 class TinyDi {

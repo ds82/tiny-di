@@ -7,7 +7,7 @@ var _prototypeProperties = function (child, staticProps, instanceProps) {
 
 /**
  * @ngdoc overview
- * @name de.ds82.juice
+ * @name de.ds82.tinydi
  */
 
 var TinyDi = (function () {
