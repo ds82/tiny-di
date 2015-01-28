@@ -15,5 +15,5 @@ gulp.task('watch', function() {
   gulp.watch(['index.es6'], ['6to5']);
 });
 
-gulp.task('default', ['6to5', 'watch']);
+gulp.task('default', ['6to5']);
 

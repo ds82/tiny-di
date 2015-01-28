@@ -1,12 +1,12 @@
 {
-  "name": "juice-di",
+  "name": "tiny-di",
   "version": "0.0.1",
-  "description": "A lightweight DI for node.js/express applications",
+  "description": "A tini tiny dependency injection container for node/io.js applications",
   "main": "dist/index.js",
   "scripts": {
     "test": "npm test"
   },
-  "repository": "https://github.com/ds82/juice-di.git",
+  "repository": "https://github.com/ds82/tiny-di.git",
   "author": "Dennis Saenger <npm15@mail.ds82.de>",
   "license": "MIT",
   "devDependencies": {

@@ -9,12 +9,25 @@ var _prototypeProperties = function (child, staticProps, instanceProps) {
  * @ngdoc overview
  * @name de.ds82.juice
  */
-var Juice = (function () {
-  function Juice() {
+
+var TinyDi = (function () {
+  function TinyDi() {
     this.bindings = {};
+    this.layzBindings = {};
+    this.resolverFn = function (file) {
+      return require(file);
+    };
   }
 
-  _prototypeProperties(Juice, null, {
+  _prototypeProperties(TinyDi, null, {
+    setResolver: {
+      value: function setResolver(resolverFn) {
+        this.resolverFn = resolverFn;
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
+    },
     bind: {
       value: function bind(key) {
         return new Binding(this, key);
@@ -31,9 +44,32 @@ var Juice = (function () {
       enumerable: true,
       configurable: true
     },
+    setLazyBinding: {
+      value: function setLazyBinding(key, path) {
+        this.layzBindings[key] = path;
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
+    },
+    lazy: {
+      value: function lazy(key) {
+        key = this.layzBindings[key] || key;
+        var resolved = this.resolverFn(key);
+
+        if (resolved) {
+          var object = this.apply(resolved);
+          this.set(key, object);
+          return object;
+        }
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
+    },
     get: {
       value: function get(key) {
-        return this.bindings[key];
+        return this.bindings[key] ? this.bindings[key] : this.lazy(key);
       },
       writable: true,
       enumerable: true,
@@ -41,8 +77,10 @@ var Juice = (function () {
     },
     apply: {
       value: function apply(fn, that) {
-        var argumentList = fn.$inject.map(this.get, this);
-        return fn.apply(that, argumentList);
+        if (fn && fn.$inject) {
+          var argumentList = fn.$inject.map(this.get, this);
+          return fn.apply(that, argumentList);
+        }
       },
       writable: true,
       enumerable: true,
@@ -50,7 +88,7 @@ var Juice = (function () {
     }
   });
 
-  return Juice;
+  return TinyDi;
 })();
 
 var Binding = (function () {
@@ -68,10 +106,34 @@ var Binding = (function () {
       writable: true,
       enumerable: true,
       configurable: true
+    },
+    lazy: {
+      value: function lazy(path) {
+        this.injector.setLazyBinding(this.key, path);
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
+    },
+    apply: {
+      value: function apply(fn) {
+        this.injector.set(this.key, this.injector.apply(fn));
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
+    },
+    load: {
+      value: function load(file) {
+        this.injector.set(this.key, this.injector.lazy(file));
+      },
+      writable: true,
+      enumerable: true,
+      configurable: true
     }
   });
 
   return Binding;
 })();
 
-module.exports = Juice;
+module.exports = TinyDi;
