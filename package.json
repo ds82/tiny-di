@@ -1,6 +1,6 @@
 {
   "name": "tiny-di",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A tini tiny dependency injection container for node/io.js applications",
   "main": "dist/index.js",
   "scripts": {
