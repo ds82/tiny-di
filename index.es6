@@ -26,6 +26,7 @@ class TinyDi {
 
   set(key, object) {
     this.bindings[key] = object;
+    return object;
   }
 
   setLazyBinding(key, path) {
@@ -33,13 +34,12 @@ class TinyDi {
   }
 
   lazy(key) {
-    key = this.layzBindings[key] || key;
-
-    if (this.hasBinding(key)) {
-      return this.get(key);
+    var load = this.layzBindings[key] || key;
+    if (this.hasBinding(load)) {
+      return this.get(load);
     }
 
-    var resolved = this.resolverFn(key);
+    var resolved = this.resolverFn(load);
 
     if (resolved) {
       var object = this.apply(resolved);
@@ -83,11 +83,10 @@ class Binding {
   }
 
   load(file) {
-    this.injector.set(this.key, this.injector.get(file));
+    this.injector.setLazyBinding(this.key, file);
+    return this.injector.set(this.key, this.injector.get(file));
   }
 }
 
 module.exports = TinyDi;
-
-
 

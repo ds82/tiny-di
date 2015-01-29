@@ -47,6 +47,7 @@ var TinyDi = (function () {
     set: {
       value: function set(key, object) {
         this.bindings[key] = object;
+        return object;
       },
       writable: true,
       enumerable: true,
@@ -62,13 +63,12 @@ var TinyDi = (function () {
     },
     lazy: {
       value: function lazy(key) {
-        key = this.layzBindings[key] || key;
-
-        if (this.hasBinding(key)) {
-          return this.get(key);
+        var load = this.layzBindings[key] || key;
+        if (this.hasBinding(load)) {
+          return this.get(load);
         }
 
-        var resolved = this.resolverFn(key);
+        var resolved = this.resolverFn(load);
 
         if (resolved) {
           var object = this.apply(resolved);
@@ -138,7 +138,8 @@ var Binding = (function () {
     },
     load: {
       value: function load(file) {
-        this.injector.set(this.key, this.injector.get(file));
+        this.injector.setLazyBinding(this.key, file);
+        return this.injector.set(this.key, this.injector.get(file));
       },
       writable: true,
       enumerable: true,
