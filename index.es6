@@ -8,6 +8,7 @@ class TinyDi {
     this.bindings = {};
     this.layzBindings = {};
     this.resolving = [];
+
     this.resolverFn = function(file){
       return require(file);
     };
@@ -36,6 +37,7 @@ class TinyDi {
 
   lazy(key) {
     var load = this.layzBindings[key] || key;
+
     if (this.hasBinding(load)) {
       return this.get(load);
     }
@@ -44,6 +46,7 @@ class TinyDi {
       // console.log('tried to resolve:', this.resolving);
       throw new Error('Circular dependency found; abort loading');
     }
+
     var resolved = this.resolverFn(load);
 
     if (resolved) {
@@ -63,10 +66,13 @@ class TinyDi {
 
   apply(fn, that) {
 
-    if (fn && fn.$inject) {
+    if (fn && fn.$inject && typeof fn === 'function') {
       var argumentList = fn.$inject.map(this.get, this);
       return fn.apply(that, argumentList);
     }
+    return fn;
+  }
+
   markResolving(key) {
     this.resolving.push(key);
   }

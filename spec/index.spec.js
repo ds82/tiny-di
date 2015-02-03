@@ -15,14 +15,15 @@ describe('tiny-di', function() {
     'Dep3': Dep3,
     'other': other()
   };
+
   beforeEach(function() {
     fakeLoader = jasmine.createSpy('fakeLoader');
+
     tiny = new TinyDi();
     tiny.setResolver(fakeLoader);
   });
 
   it('bind->load should return module', function() {
-
     fakeLoader.andReturn(Fake);
     var test = tiny.bind('test').load('fake');
     expect(test).toEqual(Fake);
@@ -34,7 +35,6 @@ describe('tiny-di', function() {
   });
 
   it('bind->lazy, get should lazy load object', function() {
-
     var called = false;
     var stub = function() {
       called = true;
@@ -94,6 +94,13 @@ describe('tiny-di', function() {
     var fn = function() { tiny.get('Dep1'); };
     expect(fn).toThrow(new Error('Circular dependency found; abort loading'));
   });
+
+  it('should always return module.exports value of required file', function() {
+    fakeLoader.andCallFake(resolveByFakeMap);
+    var blob = tiny.get('other');
+    expect(blob).toEqual(other());
+  });
+
   function resolveByFakeMap(what) {
     return FAKE_MAP[what];
   }
