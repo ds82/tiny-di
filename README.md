@@ -1,4 +1,6 @@
-# tiny-di
+# tiny-di [![Build Status](https://secure.travis-ci.org/ds82/tiny-di.svg)](http://travis-ci.org/ds82/tiny-di)
+
+[![npm](https://nodei.co/npm/tiny-di.png?downloads=true&stars=true)](https://nodei.co/npm/tiny-di/)
 
 A tini tiny dependency injection container for node.js/io.js
 
@@ -46,8 +48,5 @@ npm install
 npm test
 ```
 
-# why do you need a di container for node.js/io.js?
-
-Why the hell not?
 
 
