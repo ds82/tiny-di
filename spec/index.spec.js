@@ -1,6 +1,8 @@
 'use strict';
 
-var TinyDi = require('../dist/');
+var tinyDi = require('../dist/');
+
+module.exports = 'tiny-di.spec';
 
 describe('tiny-di', function() {
 
@@ -19,8 +21,17 @@ describe('tiny-di', function() {
   beforeEach(function() {
     fakeLoader = jasmine.createSpy('fakeLoader');
 
-    tiny = new TinyDi();
+    tiny = tinyDi();
     tiny.setResolver(fakeLoader);
+  });
+
+  it('should resolve relative to main module', function() {
+    tiny = tinyDi();
+    tiny.setResolver(function(file) {
+      return require(file);
+    });
+    var pack = tiny.get('./index.spec.js');
+    expect(pack).toEqual(module.exports);
   });
 
   it('bind->load should return module', function() {
@@ -100,6 +111,22 @@ describe('tiny-di', function() {
     var blob = tiny.get('other');
     expect(blob).toEqual(other());
   });
+
+
+  describe('ns', function() {
+
+    it('should consider namespaces', function() {
+      fakeLoader.andCallFake(resolveByFakeMap);
+
+      var dir = './test/blubb/blah';
+      tiny.ns('test').to(dir);
+
+      tiny.get('test/some');
+      expect(fakeLoader).toHaveBeenCalledWith(dir+'/some');
+    });
+
+  });
+
 
   function resolveByFakeMap(what) {
     return FAKE_MAP[what];

@@ -8,7 +8,14 @@ A tini tiny dependency injection container for node.js/io.js
 
 ```javascript
 // main.js
-var tiny = require('tiny-di');
+var tiny = require('tiny-di')();
+
+// you should always set a basic resolver
+// without this, require calls are relative to the
+// location of the tiny-di module (somewhere in node_modules)
+tiny.setResolver(function(file) {
+  return require(file);
+});
 
 // `require` the module now and bind it to `app`
 tiny.bind('app').load('lib/app');
@@ -22,6 +29,10 @@ tiny.bind('something').to(something);
 // layz bind
 // this module is loaded as soon as somebody requests the binding `another`
 tiny.bind('another').lazy('v1/another');
+
+// use namespaces
+tiny.ns('some/ns').to('./some/local/dir/');
+tiny.get('some/ns/foo'); // will require('./some/local/dir/foo')
 
 ...
 ```
