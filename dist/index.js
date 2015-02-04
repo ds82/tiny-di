@@ -237,7 +237,7 @@ var Lazy = (function () {
   _prototypeProperties(Lazy, null, {
     load: {
       value: function load() {
-        return this.injector.load(key, path);
+        return this.injector.load(this.key, this.path);
       },
       writable: true,
       enumerable: true,

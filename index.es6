@@ -164,7 +164,7 @@ class Lazy {
   }
 
   load() {
-    return this.injector.load(key, path);
+    return this.injector.load(this.key, this.path);
   }
 }
 

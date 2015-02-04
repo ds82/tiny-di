@@ -112,6 +112,19 @@ describe('tiny-di', function() {
     expect(blob).toEqual(other());
   });
 
+  describe('lazy', function() {
+  
+    it('should lazy load modules', function() {
+      fakeLoader.andCallFake(resolveByFakeMap);
+
+      tiny.bind('some').lazy('Fake');
+      var fake = tiny.get('some');
+
+      expect(fake).toEqual(Fake);
+    });
+  
+  
+  });
 
   describe('ns', function() {
 
@@ -122,7 +135,7 @@ describe('tiny-di', function() {
       tiny.ns('test').to(dir);
 
       tiny.get('test/some');
-      expect(fakeLoader).toHaveBeenCalledWith(dir+'/some');
+      expect(fakeLoader).toHaveBeenCalledWith(dir + '/some');
     });
 
   });
