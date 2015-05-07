@@ -35,7 +35,7 @@ describe('tiny-di', function() {
   });
 
   it('bind->load should return module', function() {
-    fakeLoader.andReturn(Fake);
+    fakeLoader.and.returnValue(Fake);
     var test = tiny.bind('test').load('fake');
     expect(test).toEqual(Fake);
   });
@@ -62,17 +62,17 @@ describe('tiny-di', function() {
   });
 
   it('bind->load, should be bound to bind key', function() {
-    fakeLoader.andReturn(Fake);
+    fakeLoader.and.returnValue(Fake);
 
     tiny.bind('test').load('some');
 
     expect(tiny.hasBinding('test')).toBe(true);
     expect(tiny.get('test')).toEqual(Fake);
-    expect(fakeLoader.calls.length).toBe(1);
+    expect(fakeLoader.calls.count()).toBe(1);
   });
 
   it('bind->load should never require a file twice', function() {
-    fakeLoader.andReturn(Fake);
+    fakeLoader.and.returnValue(Fake);
 
     var test = tiny.bind('test').load('fake');
 
@@ -82,11 +82,11 @@ describe('tiny-di', function() {
     expect(test).toEqual(Fake);
     expect(t1).toEqual(Fake);
     expect(t2).toEqual(Fake);
-    expect(fakeLoader.calls.length).toBe(1);
+    expect(fakeLoader.calls.count()).toBe(1);
   });
 
   it('auto-loaded deps should not be loaded more than once', function() {
-    fakeLoader.andCallFake(resolveByFakeMap);
+    fakeLoader.and.callFake(resolveByFakeMap);
 
     var fake = tiny.get('Fake');
     var fakeWithDep = tiny.get('FakeWithDep');
@@ -95,41 +95,39 @@ describe('tiny-di', function() {
     expect(fakeWithDep).toEqual(Fake);
 
     // 1 for Fake, 1 for FakeWithDep
-    expect(fakeLoader.calls.length).toEqual(2);
+    expect(fakeLoader.calls.count()).toEqual(2);
   });
 
-
   it('should recognize circular deps', function() {
-    fakeLoader.andCallFake(resolveByFakeMap);
+    fakeLoader.and.callFake(resolveByFakeMap);
 
     var fn = function() { tiny.get('Dep1'); };
     expect(fn).toThrow(new Error('Circular dependency found; abort loading'));
   });
 
   it('should always return module.exports value of required file', function() {
-    fakeLoader.andCallFake(resolveByFakeMap);
+    fakeLoader.and.callFake(resolveByFakeMap);
     var blob = tiny.get('other');
     expect(blob).toEqual(other());
   });
 
   describe('lazy', function() {
-  
+
     it('should lazy load modules', function() {
-      fakeLoader.andCallFake(resolveByFakeMap);
+      fakeLoader.and.callFake(resolveByFakeMap);
 
       tiny.bind('some').lazy('Fake');
       var fake = tiny.get('some');
 
       expect(fake).toEqual(Fake);
     });
-  
-  
+
   });
 
   describe('ns', function() {
 
     it('should consider namespaces', function() {
-      fakeLoader.andCallFake(resolveByFakeMap);
+      fakeLoader.and.callFake(resolveByFakeMap);
 
       var dir = './test/blubb/blah';
       tiny.ns('test').to(dir);
@@ -139,7 +137,6 @@ describe('tiny-di', function() {
     });
 
   });
-
 
   function resolveByFakeMap(what) {
     return FAKE_MAP[what];
@@ -165,9 +162,7 @@ describe('tiny-di', function() {
   function Dep3(dep1) {}
 
   function other() {
-    return { other: true };
+    return {other: true};
   }
 
 });
-
-
