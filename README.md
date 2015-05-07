@@ -1,4 +1,4 @@
-# tiny-di [![Build Status](https://secure.travis-ci.org/ds82/tiny-di.svg)](http://travis-ci.org/ds82/tiny-di)
+# tiny-di [![Build Status](https://secure.travis-ci.org/ds82/tiny-di.svg)](http://travis-ci.org/ds82/tiny-di) [![Coverage Status](https://coveralls.io/repos/ds82/tiny-di/badge.svg?branch=master)](https://coveralls.io/r/ds82/tiny-di?branch=master)
 
 [![npm](https://nodei.co/npm/tiny-di.png?downloads=true&stars=true)](https://nodei.co/npm/tiny-di/)
 

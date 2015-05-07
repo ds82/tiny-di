@@ -6,12 +6,14 @@
   "scripts": {
     "prepublish": "npm run build && npm test",
     "test": "istanbul cover jasmine",
+    "test-travis": "istanbul cover jasmine && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "build": "gulp"
   },
   "repository": "https://github.com/ds82/tiny-di.git",
   "author": "Dennis Saenger <npm15@mail.ds82.de>",
   "license": "MIT",
   "devDependencies": {
+    "coveralls": "^2.11.2",
     "gulp": "^3.8.10",
     "gulp-babel": "^5.1.0",
     "gulp-cli": "^0.2.0",

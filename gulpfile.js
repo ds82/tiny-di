@@ -7,10 +7,10 @@ var gulp     = require('gulp');
 var babel    = require('gulp-babel');
 var smaps    = require('gulp-sourcemaps');
 var rename   = require('gulp-rename');
-var minimist = require('minimist');
+// var minimist = require('minimist');
 var jasmine  = require('gulp-jasmine');
 
-var options = minimist(process.argv.slice(2));
+// var options = minimist(process.argv.slice(2));
 
 gulp.task('babel', function() {
   return gulp.src('index.es6')
