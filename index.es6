@@ -3,33 +3,6 @@
  * @name de.ds82.juice
  */
 
-//
-// Array.prototype.find polyfill
-// https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/find
-//
-if (!Array.prototype.find) {
-  Array.prototype.find = function(predicate) {
-    if (!this) {
-      throw new TypeError('Array.prototype.find called on null or undefined');
-    }
-    if (typeof predicate !== 'function') {
-      throw new TypeError('predicate must be a function');
-    }
-    var list = Object(this);
-    var length = list.length >>> 0;
-    var thisArg = arguments[1];
-    var value;
-
-    for (var i = 0; i < length; i++) {
-      value = list[i];
-      if (predicate.call(thisArg, value, i, list)) {
-        return value;
-      }
-    }
-    return undefined;
-  };
-}
-
 class TinyDi {
   constructor() {
 
@@ -87,7 +60,7 @@ class TinyDi {
   }
 
   setNsBinding(ns, dir) {
-    this.nsBindings.push({ ns: ns, path: dir });
+    this.nsBindings.push({ns: ns, path: dir});
   }
 
   set(key, object) {
@@ -110,7 +83,6 @@ class TinyDi {
 
   lazy(key) {
     if (this.isCircularDep(key)) {
-      // console.log('tried to resolve:', this.resolving);
       throw new Error('Circular dependency found; abort loading');
     }
     return this.load(key, key);
@@ -151,7 +123,6 @@ class TinyDi {
   }
 
   isCircularDep(key) {
-    // console.log('isCircularDep', key, this.resolving.indexOf(key));
     return (this.resolving.indexOf(key) > -1);
   }
 }
@@ -207,4 +178,3 @@ class PathBinding {
 module.exports = function() {
   return new TinyDi();
 };
-
