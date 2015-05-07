@@ -1,35 +1,37 @@
 'use strict';
+require('source-map-support').install();
 
 var fs     = require('fs');
 
-var gulp   = require('gulp');
-var to5    = require('gulp-6to5');
-var smaps  = require('gulp-sourcemaps');
-var rename = require('gulp-rename');
+var gulp     = require('gulp');
+var babel    = require('gulp-babel');
+var smaps    = require('gulp-sourcemaps');
+var rename   = require('gulp-rename');
 var minimist = require('minimist');
+var jasmine  = require('gulp-jasmine');
 
 var options = minimist(process.argv.slice(2));
 
-gulp.task('6to5', function() {
+gulp.task('babel', function() {
   return gulp.src('index.es6')
     .pipe(smaps.init())
-    .pipe(to5())
+    .pipe(babel())
     .pipe(rename('index.js'))
     .pipe(smaps.write('.'))
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task('watch', ['6to5'], function() {
-  gulp.watch(['index.es6'], ['6to5']);
+gulp.task('test', function() {
+  return gulp.src('spec/*.spec.js')
+    .pipe(jasmine({
+      verbose: true,
+      includeStackTrace: true
+    }));
 });
 
-gulp.task('set-version', function() {
-  if (options.version) {
-    var pack = require('./package.json');
-    pack.version = options.version;
-    fs.writeFileSync('package.json', JSON.stringify(pack, null, '  '));
-  }
+gulp.task('watch', ['babel'], function() {
+  gulp.watch(['index.es6'], ['babel']);
+  gulp.watch(['dist/index.js', 'spec/*.spec.js'], ['test']);
 });
 
-gulp.task('default', ['6to5']);
-
+gulp.task('default', ['babel']);

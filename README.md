@@ -50,7 +50,7 @@ function Module(app, something, another) {
 
 ```
 
-# unit tests
+# tests
 
 There are some basic unit tests (more to come)
 
@@ -58,6 +58,10 @@ There are some basic unit tests (more to come)
 npm install
 npm test
 ```
+
+# license
+
+MIT
 
 
 
