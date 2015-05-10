@@ -10,13 +10,6 @@ A tini tiny dependency injection container for node.js/io.js
 // main.js
 var tiny = require('tiny-di')();
 
-// you should always set a basic resolver
-// without this, require calls are relative to the
-// location of the tiny-di module (somewhere in node_modules)
-tiny.setResolver(function(file) {
-  return require(file);
-});
-
 // `require` the module now and bind it to `app`
 tiny.bind('app').load('lib/app');
 
@@ -34,6 +27,16 @@ tiny.bind('another').lazy('v1/another');
 tiny.ns('some/ns').to('./some/local/dir/');
 tiny.get('some/ns/foo'); // will require('./some/local/dir/foo')
 
+// tiny-di comes with built-in resolver which tries
+// to cover basic use cases.
+// if you need a more advanced resolving of your deps, you can
+// set a custom resolver
+// have a look at the built-in resolver before doing this!
+tiny.setResolver(function(file) {
+  return require(file);
+});
+
+
 ...
 ```
 
@@ -44,6 +47,12 @@ module.exports Module;
 
 Module.$inject = ['app', 'something', 'another'];
 function Module(app, something, another) {
+
+  // use the constructor pattern for your modules/libs/classes..
+  if (!(this instanceof Module)) {
+    return new Module(app, something, another);
+  }
+
   // app, something and another are injected :)
   ...
 }

@@ -3,6 +3,8 @@
  * @name de.ds82.juice
  */
 
+var path = require('path');
+
 //
 // Array.prototype.find polyfill
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/find
@@ -43,7 +45,17 @@ class TinyDi {
 
   getDefaultResolver() {
     return function(file) {
-      return require(file);
+      var filePath = path.join(path.dirname(require.main.filename), file);
+      try {
+        return require(filePath);
+      } catch (error1) {
+        try {
+          return require(file);
+        } catch (error2) {
+          console.log('ERROR: Cannot load module', file);
+          console.log('tried to require `' + filePath + '` and `' + file + '`');
+        }
+      }
     };
   }
 

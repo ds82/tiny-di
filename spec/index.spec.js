@@ -25,6 +25,11 @@ describe('tiny-di', function() {
     tiny.setResolver(fakeLoader);
   });
 
+  it('should create an instance if TinyDi when called as function', function() {
+    var tiny = tinyDi();
+    expect(tiny.constructor.name).toEqual('TinyDi');
+  });
+
   it('should resolve relative to main module', function() {
     tiny = tinyDi();
     tiny.setResolver(function(file) {
