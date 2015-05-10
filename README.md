@@ -59,6 +59,10 @@ function Module(app, something, another) {
 
 ```
 
+# examples
+
+look at the `example`-folder for a simple howto
+
 # tests
 
 There are some basic unit tests (more to come)
