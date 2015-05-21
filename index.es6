@@ -9,28 +9,27 @@ var path = require('path');
 // Array.prototype.find polyfill
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/find
 //
-if (!Array.prototype.find) {
-  Array.prototype.find = function(predicate) {
-    if (!this) {
-      throw new TypeError('Array.prototype.find called on null or undefined');
-    }
-    if (typeof predicate !== 'function') {
-      throw new TypeError('predicate must be a function');
-    }
-    var list = Object(this);
-    var length = list.length >>> 0;
-    var thisArg = arguments[1];
-    var value;
+function findPolyfill(list, predicate) {
+  if (!list) {
+    throw new TypeError('find called with null or undefined list');
+  }
+  if (typeof predicate !== 'function') {
+    throw new TypeError('predicate must be a function');
+  }
+  var length = list.length >>> 0;
+  var value;
 
-    for (var i = 0; i < length; i++) {
-      value = list[i];
-      if (predicate.call(thisArg, value, i, list)) {
-        return value;
-      }
+  for (var i = 0; i < length; i++) {
+    value = list[i];
+    if (predicate.call(list, value, i, list)) {
+      return value;
     }
-    return undefined;
-  };
+  }
+  return undefined;
 }
+
+var find = (Array.hasOwnProperty('find')) ?
+  [].find.call : findPolyfill;
 
 class TinyDi {
   constructor() {
@@ -70,7 +69,7 @@ class TinyDi {
 
     if (prefix && prefix.length) {
 
-      var ns = this.nsBindings.find(function(element) {
+      var ns = find(this.nsBindings, function(element) {
         return element.ns.match(prefix);
       });
 
@@ -108,6 +107,7 @@ class TinyDi {
   }
 
   load(key, what) {
+    what = what || key;
     what = this.resolveKey(what);
     var resolved = this.resolverFn(what);
 

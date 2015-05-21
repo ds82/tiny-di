@@ -15,11 +15,13 @@ describe('tiny-di', function() {
     'Dep1': Dep1,
     'Dep2': Dep2,
     'Dep3': Dep3,
-    'other': other()
+    'other': other(),
+    'some/other': Fake
   };
 
   beforeEach(function() {
     fakeLoader = jasmine.createSpy('fakeLoader');
+    fakeLoader.and.callFake(resolveByFakeMap);
 
     tiny = tinyDi();
     tiny.setResolver(fakeLoader);
@@ -91,8 +93,6 @@ describe('tiny-di', function() {
   });
 
   it('auto-loaded deps should not be loaded more than once', function() {
-    fakeLoader.and.callFake(resolveByFakeMap);
-
     var fake = tiny.get('Fake');
     var fakeWithDep = tiny.get('FakeWithDep');
 
@@ -103,28 +103,49 @@ describe('tiny-di', function() {
     expect(fakeLoader.calls.count()).toEqual(2);
   });
 
-  it('should recognize circular deps', function() {
-    fakeLoader.and.callFake(resolveByFakeMap);
-
+  it('should recognize circular deps using get()', function() {
     var fn = function() { tiny.get('Dep1'); };
     expect(fn).toThrow(new Error('Circular dependency found; abort loading'));
   });
 
+  it('should recognize circular deps using load()', function() {
+    var fn = function() { tiny.load('Dep1'); };
+    expect(fn).toThrow(new Error('Circular dependency found; abort loading'));
+  });
+
   it('should always return module.exports value of required file', function() {
-    fakeLoader.and.callFake(resolveByFakeMap);
     var blob = tiny.get('other');
     expect(blob).toEqual(other());
+  });
+
+  it('should load deps from subdirs', function() {
+    fakeLoader.and.returnValue(1);
+    tiny.bind('fileAPI').load('extensions/fileAPI');
+    var blob = tiny.get('fileAPI');
+
+    expect(fakeLoader).toHaveBeenCalledWith('extensions/fileAPI');
   });
 
   describe('lazy', function() {
 
     it('should lazy load modules', function() {
-      fakeLoader.and.callFake(resolveByFakeMap);
+      var spy = jasmine.createSpy('lazySpy');
 
-      tiny.bind('some').lazy('Fake');
+      Lazy.$inject = [];
+      function Lazy() {
+        spy();
+        return 111;
+      }
+
+      fakeLoader.and.returnValue(Lazy);
+
+      tiny.bind('some').lazy('Lazy');
+      expect(spy).not.toHaveBeenCalled();
+
       var fake = tiny.get('some');
 
-      expect(fake).toEqual(Fake);
+      expect(spy).toHaveBeenCalled();
+      expect(fake).toEqual(111);
     });
 
   });
