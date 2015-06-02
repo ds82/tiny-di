@@ -166,10 +166,16 @@ class TinyDi {
   }
 }
 
-class Lazy {
-  constructor(injector, key, path) {
+class AbstractBinding {
+  constructor(injector, key) {
     this.injector = injector;
     this.key = key;
+  }
+}
+
+class Lazy extends AbstractBinding {
+  constructor(injector, key, path) {
+    super(injector, key);
     this.path = path;
   }
 
@@ -178,12 +184,7 @@ class Lazy {
   }
 }
 
-class Binding {
-  constructor(injector, key) {
-    this.injector = injector;
-    this.key = key;
-  }
-
+class Binding extends AbstractBinding {
   to(object) {
     this.injector.set(this.key, object);
     return this.injector;
@@ -203,12 +204,7 @@ class Binding {
   }
 }
 
-class PathBinding {
-  constructor(injector, key) {
-    this.injector = injector;
-    this.key = key;
-  }
-
+class PathBinding extends AbstractBinding {
   to(dir) {
     this.injector.setNsBinding(this.key, dir);
   }
