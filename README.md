@@ -63,6 +63,14 @@ function Module(app, something, another) {
 
 look at the `example`-folder for a simple howto
 
+# develop
+
+```javascript
+npm install
+npm run watch
+
+```
+
 # tests
 
 There are some basic unit tests (more to come)

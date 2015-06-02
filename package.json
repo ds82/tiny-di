@@ -7,7 +7,8 @@
     "prepublish": "npm run build && npm test",
     "test": "istanbul cover jasmine",
     "test-travis": "istanbul cover jasmine && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
-    "build": "gulp"
+    "build": "gulp",
+    "watch": "gulp watch"
   },
   "repository": "https://github.com/ds82/tiny-di.git",
   "author": "Dennis Saenger <npm15@mail.ds82.de>",
