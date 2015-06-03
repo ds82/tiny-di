@@ -27,6 +27,14 @@ tiny.bind('another').lazy('v1/another');
 tiny.ns('some/ns').to('./some/local/dir/');
 tiny.get('some/ns/foo'); // will require('./some/local/dir/foo')
 
+// use custom providers
+tiny.provide('Something', somethingProvider);
+
+// this function is called whenever a module requires `Somehing`
+function somethingProvider(env, injector) {
+  return 'I was required by ' + env.binding;
+}
+
 // tiny-di comes with built-in resolver which tries
 // to cover basic use cases.
 // if you need a more advanced resolving of your deps, you can

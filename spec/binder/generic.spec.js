@@ -1,6 +1,6 @@
 'use strict';
 
-var proxy    = require('proxyquire').noCallThru();
+var proxy    = require('proxyquire').noCallThru().noPreserveCache();
 
 var lazyStub = {};
 lazyStub.LazyBinding = jasmine.createSpy('Lazy');
@@ -8,6 +8,8 @@ lazyStub.LazyBinding = jasmine.createSpy('Lazy');
 var UUT      = proxy('../../dist/binder/generic', {
   '../binding/lazy': lazyStub
 }).GenericBinder;
+
+proxy.callThru();
 
 describe('binder/generic', function() {
   var uut;

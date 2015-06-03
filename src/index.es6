@@ -10,6 +10,7 @@ import {AbstractBase} from './base';
 
 import {GenericBinder} from './binder/generic';
 import {PathBinder} from './binder/path';
+import {ProviderBinder} from './binder/provider';
 
 import {AbstractBinding} from './binding/abstract';
 import {LazyBinding} from './binding/lazy';
@@ -69,8 +70,17 @@ class TinyDi {
       this.lazy(key);
   }
 
+  provide(key) {
+    return new ProviderBinder(this, key);
+  }
+
   setResolver(resolverFn) {
     this.resolverFn = resolverFn;
+  }
+
+   set(key, object) {
+    this.bindings[key] = object;
+    return object;
   }
 
   //
@@ -122,11 +132,6 @@ class TinyDi {
 
   setNsBinding(ns, dir) {
     this.nsBindings.push({ns: ns, path: dir});
-  }
-
-  set(key, object) {
-    this.bindings[key] = object;
-    return object;
   }
 
   load(key, what) {

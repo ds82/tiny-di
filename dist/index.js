@@ -16,6 +16,8 @@ var _binderGeneric = require('./binder/generic');
 
 var _binderPath = require('./binder/path');
 
+var _binderProvider = require('./binder/provider');
+
 var _bindingAbstract = require('./binding/abstract');
 
 var _bindingLazy = require('./binding/lazy');
@@ -80,9 +82,20 @@ var TinyDi = (function () {
       return this.bindings[key] ? this.getBinding(key, env) : this.lazy(key);
     }
   }, {
+    key: 'provide',
+    value: function provide(key) {
+      return new _binderProvider.ProviderBinder(this, key);
+    }
+  }, {
     key: 'setResolver',
     value: function setResolver(resolverFn) {
       this.resolverFn = resolverFn;
+    }
+  }, {
+    key: 'set',
+    value: function set(key, object) {
+      this.bindings[key] = object;
+      return object;
     }
   }, {
     key: 'getDefaultResolver',
@@ -139,12 +152,6 @@ var TinyDi = (function () {
     key: 'setNsBinding',
     value: function setNsBinding(ns, dir) {
       this.nsBindings.push({ ns: ns, path: dir });
-    }
-  }, {
-    key: 'set',
-    value: function set(key, object) {
-      this.bindings[key] = object;
-      return object;
     }
   }, {
     key: 'load',

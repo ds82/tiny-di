@@ -144,6 +144,7 @@ describe('tiny-di', function() {
 
       var fake = tiny.get('some');
 
+      expect(fakeLoader).toHaveBeenCalled();
       expect(spy).toHaveBeenCalled();
       expect(fake).toEqual(111);
     });
@@ -160,6 +161,35 @@ describe('tiny-di', function() {
 
       tiny.get('test/some');
       expect(fakeLoader).toHaveBeenCalledWith(dir + '/some');
+    });
+
+  });
+
+  describe('provide-by', function() {
+
+    it('should return returnValue of providerFn', function() {
+
+      var spy = jasmine.createSpy('provider');
+      var someEnv = {foo:1, bar:2};
+
+      tiny.provide('byProvider').by(spy);
+
+      tiny.get('byProvider', someEnv);
+
+      expect(spy).toHaveBeenCalledWith(someEnv, tiny, 'byProvider');
+    });
+
+    it('should tell deps who required them', function() {
+      var spy = jasmine.createSpy('Fake');
+      tiny.provide('Fake').by(spy);
+
+      tiny.get('FakeWithDep');
+
+      var expectedEnv = {
+        key: 'FakeWithDep',
+        binding: 'FakeWithDep'
+      };
+      expect(spy).toHaveBeenCalledWith(expectedEnv, tiny, 'Fake');
     });
 
   });
