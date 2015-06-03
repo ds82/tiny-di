@@ -12,6 +12,15 @@
     "watch": "gulp watch"
   },
   "repository": "https://github.com/ds82/tiny-di.git",
+  "bugs": {
+    "url": "https://github.com/ds82/tiny-di/issues"
+  },
+  "keywords": [
+    "dependency",
+    "injection",
+    "ioc",
+    "guice"
+  ],
   "author": "Dennis Saenger <npm15@mail.ds82.de>",
   "license": "MIT",
   "devDependencies": {
