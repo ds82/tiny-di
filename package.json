@@ -4,7 +4,8 @@
   "description": "A tini tiny dependency injection container for node/io.js applications",
   "main": "dist/index.js",
   "scripts": {
-    "prepublish": "npm run build && npm test",
+    "prepublish": "npm run clean && npm run build && npm test",
+    "clean": "rimraf dist",
     "test": "istanbul cover jasmine",
     "test-travis": "istanbul cover jasmine && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "build": "gulp",
@@ -22,6 +23,8 @@
     "gulp-rename": "^1.2.0",
     "gulp-sourcemaps": "^1.3.0",
     "istanbul": "^0.3.13",
+    "proxyquire": "^1.5.0",
+    "rimraf": "^2.3.4",
     "source-map-support": "^0.2.10"
   },
   "dependencies": {

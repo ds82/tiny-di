@@ -1,9 +1,18 @@
 /**
- * @ngdoc overview
- * @name de.ds82.juice
- */
+ * tiny-di
+ * @module tiny-di
+ * @copyright Dennis Saenger <tiny-di-15@mail.ds82.de>
+*/
 
 var path = require('path');
+
+import {AbstractBase} from './base';
+
+import {GenericBinder} from './binder/generic';
+import {PathBinder} from './binder/path';
+
+import {AbstractBinding} from './binding/abstract';
+import {LazyBinding} from './binding/lazy';
 
 //
 // Array.prototype.find polyfill
@@ -41,6 +50,32 @@ class TinyDi {
 
     this.resolverFn = this.getDefaultResolver();
   }
+
+  //
+  // PUBLIC DI API
+  //
+
+  bind(key) {
+    return new GenericBinder(this, key);
+  }
+
+  ns(space) {
+    return new PathBinder(this, space);
+  }
+
+  get(key, env) {
+    return (this.bindings[key]) ?
+      this.getBinding(key, env) :
+      this.lazy(key);
+  }
+
+  setResolver(resolverFn) {
+    this.resolverFn = resolverFn;
+  }
+
+  //
+  // HELPER
+  //
 
   getDefaultResolver() {
     return function(file) {
@@ -85,18 +120,6 @@ class TinyDi {
     return !!this.bindings[key];
   }
 
-  setResolver(resolverFn) {
-    this.resolverFn = resolverFn;
-  }
-
-  bind(key) {
-    return new Binding(this, key);
-  }
-
-  ns(space) {
-    return new PathBinding(this, space);
-  }
-
   setNsBinding(ns, dir) {
     this.nsBindings.push({ns: ns, path: dir});
   }
@@ -113,7 +136,7 @@ class TinyDi {
 
     if (resolved) {
       this.markResolving(key);
-      var object = this.apply(resolved);
+      var object = this.apply(resolved, {key: key, binding: what});
       this.set(key, object);
       this.markResolved(key);
       return object;
@@ -127,26 +150,26 @@ class TinyDi {
     return this.load(key, key);
   }
 
-  getBinding(key) {
+  getBinding(key, env) {
     var binding = this.bindings[key];
-    if (binding instanceof Lazy) {
-      return binding.load();
+    if (binding instanceof AbstractBinding) {
+      return binding.$get(env);
     }
     return binding;
   }
 
-  get(key) {
-    return (this.bindings[key]) ?
-      this.getBinding(key) :
-      this.lazy(key);
-  }
-
-  apply(fn, that) {
+  apply(fn, env, that) {
+    var self = this;
 
     if (fn && fn.$inject && typeof fn === 'function') {
-      var argumentList = fn.$inject.map(this.get, this);
+      var argumentList = fn.$inject.map(_get, this);
       return fn.apply(that, argumentList);
     }
+
+    function _get(arg) {
+      return self.get(arg, env);
+    }
+
     return fn;
   }
 
@@ -163,50 +186,6 @@ class TinyDi {
 
   isCircularDep(key) {
     return (this.resolving.indexOf(key) > -1);
-  }
-}
-
-class AbstractBinding {
-  constructor(injector, key) {
-    this.injector = injector;
-    this.key = key;
-  }
-}
-
-class Lazy extends AbstractBinding {
-  constructor(injector, key, path) {
-    super(injector, key);
-    this.path = path;
-  }
-
-  load() {
-    return this.injector.load(this.key, this.path);
-  }
-}
-
-class Binding extends AbstractBinding {
-  to(object) {
-    this.injector.set(this.key, object);
-    return this.injector;
-  }
-
-  lazy(path) {
-    var lazyBind = new Lazy(this.injector, this.key, path);
-    this.injector.set(this.key, lazyBind);
-  }
-
-  apply(fn) {
-    this.injector.set(this.key, this.injector.apply(fn));
-  }
-
-  load(file) {
-    return this.injector.set(this.key, this.injector.get(file));
-  }
-}
-
-class PathBinding extends AbstractBinding {
-  to(dir) {
-    this.injector.setNsBinding(this.key, dir);
   }
 }
 
