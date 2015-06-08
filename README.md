@@ -28,7 +28,7 @@ tiny.ns('some/ns').to('./some/local/dir/');
 tiny.get('some/ns/foo'); // will require('./some/local/dir/foo')
 
 // use custom providers
-tiny.provide('Something', somethingProvider);
+tiny.provide('Something').by(somethingProvider);
 
 // this function is called whenever a module requires `Somehing`
 function somethingProvider(env, injector) {
