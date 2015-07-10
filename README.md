@@ -50,8 +50,7 @@ tiny.setResolver(function(file) {
 
 ```javascript
 // module
-module.exports Module;
-
+module.exports = Module;
 
 Module.$inject = ['app', 'something', 'another'];
 function Module(app, something, another) {
@@ -60,6 +59,8 @@ function Module(app, something, another) {
   if (!(this instanceof Module)) {
     return new Module(app, something, another);
   }
+
+  var self = this;
 
   // app, something and another are injected :)
   ...
