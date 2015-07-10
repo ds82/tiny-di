@@ -68,6 +68,27 @@ function Module(app, something, another) {
 
 ```
 
+## advanced $inject configuration
+
+```javascript
+// module
+module.exports = Module;
+
+Module.$inject = {
+  deps: ['app', 'something', 'another'],
+  callAs: 'class' // or: 'function' (default is 'function')
+};
+function Module(app, something, another) {
+
+  // callAs='class' tells the injector to instantiate a new class
+  // now you don't need to use the constructor pattern. yah!
+
+  var self = this;
+
+  // (this instanceof Module) -> true!
+}
+```
+
 # examples
 
 look at the `example`-folder for a simple howto
@@ -82,7 +103,8 @@ npm run watch
 
 # tests
 
-There are some basic unit tests (more to come)
+Test coverage is quite good at the moment (see badge above).
+
 
 ```javascript
 npm install

@@ -167,8 +167,15 @@ class TinyDi {
     var self = this;
 
     if (fn && fn.$inject && typeof fn === 'function') {
-      var argumentList = fn.$inject.map(_get, this);
-      return fn.apply(that, argumentList);
+      var isArray = Array.isArray(fn.$inject);
+      var rawArgs = (isArray) ? fn.$inject : fn.$inject.deps || [];
+
+      var returnAsClass = !isArray && fn.$inject.callAs === 'class';
+      var argumentList = rawArgs.map(_get, this);
+
+      return returnAsClass ?
+        new (Function.prototype.bind.apply(fn, [null].concat(argumentList)))() :
+        fn.apply(that, argumentList);
     }
 
     function _get(arg) {

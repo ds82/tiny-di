@@ -8,6 +8,7 @@ describe('tiny-di', function() {
 
   var tiny;
   var fakeLoader;
+  var Spy;
 
   var FAKE_MAP = {
     'Fake': Fake,
@@ -15,6 +16,9 @@ describe('tiny-di', function() {
     'Dep1': Dep1,
     'Dep2': Dep2,
     'Dep3': Dep3,
+    'ClassFake': ClassFake,
+    'Const1': 'Const1',
+    'Const2': 'Const2',
     'other': other(),
     'some/other': Fake
   };
@@ -22,6 +26,9 @@ describe('tiny-di', function() {
   beforeEach(function() {
     fakeLoader = jasmine.createSpy('fakeLoader');
     fakeLoader.and.callFake(resolveByFakeMap);
+
+    Spy = jasmine.createSpy('Spy');
+    FAKE_MAP.Spy = Spy;
 
     tiny = tinyDi();
     tiny.setResolver(fakeLoader);
@@ -78,7 +85,7 @@ describe('tiny-di', function() {
     expect(fakeLoader.calls.count()).toBe(1);
   });
 
-  it('bind->load should never require a file twice', function() {
+  it('bind->load should never require a file more than once', function() {
     fakeLoader.and.returnValue(Fake);
 
     var test = tiny.bind('test').load('fake');
@@ -124,6 +131,32 @@ describe('tiny-di', function() {
     var blob = tiny.get('fileAPI');
 
     expect(fakeLoader).toHaveBeenCalledWith('extensions/fileAPI');
+  });
+
+  it('should load deps from $inject-array', function() {
+    Spy.$inject = ['Const1', 'Const2'];
+    var spy = tiny.get('Spy');
+
+    var any = jasmine.any;
+    expect(Spy).toHaveBeenCalledWith('Const1', 'Const2');
+  });
+
+  it('should instantiate fn as function if callAs=function', function() {
+    ClassFake.$inject = {
+      callAs: 'function'
+    };
+
+    var calledAsClass = tiny.get('ClassFake');
+    expect(calledAsClass).toEqual(false);
+  });
+
+  it('should instantiate fn as class if callAs=class', function() {
+    ClassFake.$inject = {
+      callAs: 'class'
+    };
+
+    var clazz = tiny.get('ClassFake');
+    expect(clazz instanceof ClassFake).toEqual(true);
   });
 
   describe('lazy', function() {
@@ -201,6 +234,11 @@ describe('tiny-di', function() {
   Fake.$inject = [];
   function Fake() {
     return Fake;
+  }
+
+  ClassFake.$inject = {};
+  function ClassFake() {
+    if (!(this instanceof ClassFake)) { return false; }
   }
 
   FakeWithDep.$inject = ['Fake'];
