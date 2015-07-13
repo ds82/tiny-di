@@ -12,6 +12,7 @@ describe('tiny-di', function() {
 
   var FAKE_MAP = {
     'Fake': Fake,
+    'AnotherFake': AnotherFake,
     'FakeWithDep': FakeWithDep,
     'Dep1': Dep1,
     'Dep2': Dep2,
@@ -227,6 +228,21 @@ describe('tiny-di', function() {
 
   });
 
+  describe('get', function() {
+
+    it('should return single instance if called with string-parameter', function() {
+      var test = tiny.get('Fake');
+      expect(test).toEqual(Fake);
+    });
+
+    it('should return list of instances if called with list of strings', function() {
+      var list = tiny.get(['Fake', 'AnotherFake']);
+
+      expect(list[0]).toEqual(Fake);
+      expect(list[1]).toEqual(AnotherFake);
+    });
+  });
+
   function resolveByFakeMap(what) {
     return FAKE_MAP[what];
   }
@@ -234,6 +250,11 @@ describe('tiny-di', function() {
   Fake.$inject = [];
   function Fake() {
     return Fake;
+  }
+
+  AnotherFake.$inject = [];
+  function AnotherFake() {
+    return AnotherFake;
   }
 
   ClassFake.$inject = {};

@@ -79,6 +79,12 @@ var TinyDi = (function () {
   }, {
     key: 'get',
     value: function get(key, env) {
+      if (Array.isArray(key)) {
+        return key.map(function (_key) {
+          return this.get(_key, env);
+        }, this);
+      }
+
       return this.bindings[key] ? this.getBinding(key, env) : this.lazy(key);
     }
   }, {
