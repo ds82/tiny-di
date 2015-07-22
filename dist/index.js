@@ -10,7 +10,7 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-var _base = require('./base');
+// import {AbstractBase} from './base';
 
 var _binderGeneric = require('./binder/generic');
 
@@ -20,15 +20,12 @@ var _binderProvider = require('./binder/provider');
 
 var _bindingAbstract = require('./binding/abstract');
 
-var _bindingLazy = require('./binding/lazy');
-
-var path = require('path');
+// import {LazyBinding} from './binding/lazy';
 
 //
-// Array.prototype.find polyfill
-// https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/find
+// include Array.find polyfill
 //
-function findPolyfill(list, predicate) {
+var path = require('path');function findPolyfill(list, predicate) {
   if (!list) {
     throw new TypeError('find called with null or undefined list');
   }
@@ -47,8 +44,6 @@ function findPolyfill(list, predicate) {
   return undefined;
 }
 
-var find = Array.hasOwnProperty('find') ? [].find.call : findPolyfill;
-
 var TinyDi = (function () {
   function TinyDi() {
     _classCallCheck(this, TinyDi);
@@ -61,13 +56,12 @@ var TinyDi = (function () {
     this.resolverFn = this.getDefaultResolver();
   }
 
+  //
+  // PUBLIC DI API
+  //
+
   _createClass(TinyDi, [{
     key: 'bind',
-
-    //
-    // PUBLIC DI API
-    //
-
     value: function bind(key) {
       return new _binderGeneric.GenericBinder(this, key);
     }
@@ -103,13 +97,13 @@ var TinyDi = (function () {
       this.bindings[key] = object;
       return object;
     }
-  }, {
-    key: 'getDefaultResolver',
 
     //
     // HELPER
     //
 
+  }, {
+    key: 'getDefaultResolver',
     value: function getDefaultResolver() {
       return function (file) {
         var filePath = path.join(path.dirname(require.main.filename), file);
@@ -137,11 +131,9 @@ var TinyDi = (function () {
       var suffix = key.substring(moduleDelimiter);
 
       if (prefix && prefix.length) {
-
-        var ns = find(this.nsBindings, function (element) {
+        var ns = findPolyfill(this.nsBindings, function (element) {
           return element.ns.match(prefix);
         });
-
         if (ns) {
           return ns.path + suffix;
         }
@@ -201,15 +193,12 @@ var TinyDi = (function () {
         var rawArgs = isArray ? fn.$inject : fn.$inject.deps || [];
 
         var returnAsClass = !isArray && fn.$inject.callAs === 'class';
-        var argumentList = rawArgs.map(_get, this);
+        var argumentList = rawArgs.map(function (arg) {
+          return self.get(arg, env);
+        }, this);
 
         return returnAsClass ? new (Function.prototype.bind.apply(fn, [null].concat(argumentList)))() : fn.apply(that, argumentList);
       }
-
-      function _get(arg) {
-        return self.get(arg, env);
-      }
-
       return fn;
     }
   }, {

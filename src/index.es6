@@ -6,18 +6,17 @@
 
 var path = require('path');
 
-import {AbstractBase} from './base';
+// import {AbstractBase} from './base';
 
 import {GenericBinder} from './binder/generic';
 import {PathBinder} from './binder/path';
 import {ProviderBinder} from './binder/provider';
 
 import {AbstractBinding} from './binding/abstract';
-import {LazyBinding} from './binding/lazy';
+// import {LazyBinding} from './binding/lazy';
 
 //
-// Array.prototype.find polyfill
-// https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Array/find
+// include Array.find polyfill
 //
 function findPolyfill(list, predicate) {
   if (!list) {
@@ -37,9 +36,6 @@ function findPolyfill(list, predicate) {
   }
   return undefined;
 }
-
-var find = (Array.hasOwnProperty('find')) ?
-  [].find.call : findPolyfill;
 
 class TinyDi {
   constructor() {
@@ -119,11 +115,7 @@ class TinyDi {
     var suffix = key.substring(moduleDelimiter);
 
     if (prefix && prefix.length) {
-
-      var ns = find(this.nsBindings, function(element) {
-        return element.ns.match(prefix);
-      });
-
+      var ns = findPolyfill(this.nsBindings, element => element.ns.match(prefix));
       if (ns) {
         return ns.path + suffix;
       }
@@ -177,17 +169,12 @@ class TinyDi {
       var rawArgs = (isArray) ? fn.$inject : fn.$inject.deps || [];
 
       var returnAsClass = !isArray && fn.$inject.callAs === 'class';
-      var argumentList = rawArgs.map(_get, this);
+      var argumentList = rawArgs.map(arg => self.get(arg, env), this);
 
       return returnAsClass ?
         new (Function.prototype.bind.apply(fn, [null].concat(argumentList)))() :
         fn.apply(that, argumentList);
     }
-
-    function _get(arg) {
-      return self.get(arg, env);
-    }
-
     return fn;
   }
 
