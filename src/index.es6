@@ -6,36 +6,11 @@
 
 var path = require('path');
 
-// import {AbstractBase} from './base';
-
 import {GenericBinder} from './binder/generic';
 import {PathBinder} from './binder/path';
 import {ProviderBinder} from './binder/provider';
 
 import {AbstractBinding} from './binding/abstract';
-// import {LazyBinding} from './binding/lazy';
-
-//
-// include Array.find polyfill
-//
-function findPolyfill(list, predicate) {
-  if (!list) {
-    throw new TypeError('find called with null or undefined list');
-  }
-  if (typeof predicate !== 'function') {
-    throw new TypeError('predicate must be a function');
-  }
-  var length = list.length >>> 0;
-  var value;
-
-  for (var i = 0; i < length; i++) {
-    value = list[i];
-    if (predicate.call(list, value, i, list)) {
-      return value;
-    }
-  }
-  return undefined;
-}
 
 class TinyDi {
   constructor() {
@@ -80,7 +55,7 @@ class TinyDi {
     this.resolverFn = resolverFn;
   }
 
-   set(key, object) {
+  set(key, object) {
     this.bindings[key] = object;
     return object;
   }
@@ -115,7 +90,7 @@ class TinyDi {
     var suffix = key.substring(moduleDelimiter);
 
     if (prefix && prefix.length) {
-      var ns = findPolyfill(this.nsBindings, element => element.ns.match(prefix));
+      var ns = Array.find(this.nsBindings, element => element.ns.match(prefix));
       if (ns) {
         return ns.path + suffix;
       }

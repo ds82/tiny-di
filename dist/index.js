@@ -6,11 +6,11 @@
 
 'use strict';
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _createClass = require('babel-runtime/helpers/create-class')['default'];
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+var _classCallCheck = require('babel-runtime/helpers/class-call-check')['default'];
 
-// import {AbstractBase} from './base';
+var _Array$find = require('babel-runtime/core-js/array/find')['default'];
 
 var _binderGeneric = require('./binder/generic');
 
@@ -20,29 +20,7 @@ var _binderProvider = require('./binder/provider');
 
 var _bindingAbstract = require('./binding/abstract');
 
-// import {LazyBinding} from './binding/lazy';
-
-//
-// include Array.find polyfill
-//
-var path = require('path');function findPolyfill(list, predicate) {
-  if (!list) {
-    throw new TypeError('find called with null or undefined list');
-  }
-  if (typeof predicate !== 'function') {
-    throw new TypeError('predicate must be a function');
-  }
-  var length = list.length >>> 0;
-  var value;
-
-  for (var i = 0; i < length; i++) {
-    value = list[i];
-    if (predicate.call(list, value, i, list)) {
-      return value;
-    }
-  }
-  return undefined;
-}
+var path = require('path');
 
 var TinyDi = (function () {
   function TinyDi() {
@@ -131,7 +109,7 @@ var TinyDi = (function () {
       var suffix = key.substring(moduleDelimiter);
 
       if (prefix && prefix.length) {
-        var ns = findPolyfill(this.nsBindings, function (element) {
+        var ns = _Array$find(this.nsBindings, function (element) {
           return element.ns.match(prefix);
         });
         if (ns) {
