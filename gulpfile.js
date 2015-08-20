@@ -9,10 +9,12 @@ var smaps    = require('gulp-sourcemaps');
 var rename   = require('gulp-rename');
 var jasmine  = require('gulp-jasmine');
 
+var BABEL_OPTS = {optional: ["runtime"]};
+
 gulp.task('babel', function() {
   return gulp.src('src/**/*.es6')
     .pipe(smaps.init())
-    .pipe(babel())
+    .pipe(babel(BABEL_OPTS))
     .pipe(rename(function(path) {
       path.extname = '.js';
     }))
