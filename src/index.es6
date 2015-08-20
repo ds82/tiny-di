@@ -100,6 +100,8 @@ class TinyDi {
         } catch (error2) {
           console.log('ERROR: Cannot load module', file);
           console.log('tried to require `' + filePath + '` and `' + file + '`');
+          console.log(error1.stack || error1);
+          console.log(error2.stack || error2);
         }
       }
     };
@@ -175,6 +177,11 @@ class TinyDi {
         new (Function.prototype.bind.apply(fn, [null].concat(argumentList)))() :
         fn.apply(that, argumentList);
     }
+
+    if (typeof fn === 'undefined') {
+      console.log(`Warning: requested module returned undefined ${env}`);
+    }
+
     return fn;
   }
 

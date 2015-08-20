@@ -19,18 +19,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== 'function' 
 
 var _base = require('../base');
 
+var path = require('path');
+
 var PathBinder = (function (_AbstractBase) {
   _inherits(PathBinder, _AbstractBase);
 
-  function PathBinder() {
+  function PathBinder(injector, key) {
     _classCallCheck(this, PathBinder);
 
-    _get(Object.getPrototypeOf(PathBinder.prototype), 'constructor', this).apply(this, arguments);
+    _get(Object.getPrototypeOf(PathBinder.prototype), 'constructor', this).call(this, injector, key);
+    this.basePath = path.dirname(require.main.filename);
   }
 
   _createClass(PathBinder, [{
     key: 'to',
     value: function to(dir) {
+      dir = './' + path.relative(this.basePath, path.resolve(this.basePath, dir));
       this.injector.setNsBinding(this.key, dir);
     }
   }]);
