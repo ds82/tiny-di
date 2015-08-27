@@ -225,6 +225,15 @@ describe('tiny-di', function() {
       expect(fakeLoader).toHaveBeenCalledWith(dir + '/some');
     });
 
+    it('should work with deep module', function() {
+      tiny.ns('test').to('some');
+
+      var bar = tiny.get('test/foo/bar');
+
+      expect(bar).toEqual(FAKE_MAP['some/foo/bar']);
+      expect(fakeLoader).toHaveBeenCalledWith('some/foo/bar');
+    });
+
   });
 
   describe('provide-by', function() {

@@ -12,6 +12,11 @@ import {ProviderBinder} from './binder/provider';
 
 import {AbstractBinding} from './binding/abstract';
 
+// https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions
+function escapeRegExp(string){
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 class TinyDi {
   constructor() {
 
@@ -85,18 +90,15 @@ class TinyDi {
       return key;
     }
 
-    var moduleDelimiter = String(key).lastIndexOf('/');
-    moduleDelimiter = (moduleDelimiter === -1) ? key.length : moduleDelimiter;
-    var prefix = key.substring(0, moduleDelimiter);
-    var suffix = key.substring(moduleDelimiter);
+    var prefix = Array.find(this.nsBindings, prefix => {
+      var re = new RegExp('^' + escapeRegExp(prefix.ns) + '.*');
+      return re.test(prefix.ns);
+    });
 
-    if (prefix && prefix.length) {
-      var ns = Array.find(this.nsBindings, element => element.ns.match(prefix));
-      if (ns) {
-        return ns.path + suffix;
-      }
+    if (prefix) {
+      var re = new RegExp('^' + escapeRegExp(prefix.ns));
+      return key.replace(re, prefix.path);
     }
-
     return key;
   }
 

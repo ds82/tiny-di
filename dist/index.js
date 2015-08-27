@@ -20,7 +20,12 @@ var _binderProvider = require('./binder/provider');
 
 var _bindingAbstract = require('./binding/abstract');
 
+// https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions
 var path = require('path');
+
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 var TinyDi = (function () {
   function TinyDi() {
@@ -104,20 +109,15 @@ var TinyDi = (function () {
         return key;
       }
 
-      var moduleDelimiter = String(key).lastIndexOf('/');
-      moduleDelimiter = moduleDelimiter === -1 ? key.length : moduleDelimiter;
-      var prefix = key.substring(0, moduleDelimiter);
-      var suffix = key.substring(moduleDelimiter);
+      var prefix = _Array$find(this.nsBindings, function (prefix) {
+        var re = new RegExp('^' + escapeRegExp(prefix.ns) + '.*');
+        return re.test(prefix.ns);
+      });
 
-      if (prefix && prefix.length) {
-        var ns = _Array$find(this.nsBindings, function (element) {
-          return element.ns.match(prefix);
-        });
-        if (ns) {
-          return ns.path + suffix;
-        }
+      if (prefix) {
+        var re = new RegExp('^' + escapeRegExp(prefix.ns));
+        return key.replace(re, prefix.path);
       }
-
       return key;
     }
   }, {
