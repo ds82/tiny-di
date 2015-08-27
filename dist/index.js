@@ -105,6 +105,7 @@ var TinyDi = (function () {
       }
 
       var moduleDelimiter = String(key).lastIndexOf('/');
+      moduleDelimiter = moduleDelimiter === -1 ? key.length : moduleDelimiter;
       var prefix = key.substring(0, moduleDelimiter);
       var suffix = key.substring(moduleDelimiter);
 

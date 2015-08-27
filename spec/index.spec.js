@@ -21,7 +21,9 @@ describe('tiny-di', function() {
     'Const1': 'Const1',
     'Const2': 'Const2',
     'other': other(),
-    'some/other': Fake
+    'some': Fake,
+    'some/other': Fake,
+    'some/foo': NeedsTestNS
   };
 
   beforeEach(function() {
@@ -187,7 +189,33 @@ describe('tiny-di', function() {
 
   describe('ns', function() {
 
-    it('should consider namespaces', function() {
+    it('should consider generic namespaces', function() {
+      fakeLoader.and.callFake(resolveByFakeMap);
+
+      tiny.ns('test').to('some');
+      var other = tiny.get('test/other');
+
+      expect(fakeLoader).toHaveBeenCalledWith('some/other');
+      expect(other).toEqual(FAKE_MAP['some/other']);
+    });
+
+    it('should work with root of ns', function() {
+      tiny.ns('test').to('some');
+      var dep1 = tiny.get('test');
+
+      expect(dep1).toEqual(FAKE_MAP.some);
+      expect(fakeLoader).toHaveBeenCalledWith('some');
+    });
+
+    it('should work with $inject', function() {
+      tiny.ns('test').to('some');
+
+      var fake = tiny.get('test/foo');
+
+      expect(fake).toEqual(Fake);
+    });
+
+    it('should consider (dir-)namespaces', function() {
       fakeLoader.and.callFake(resolveByFakeMap);
 
       var dir = './test/blubb/blah';
@@ -278,6 +306,11 @@ describe('tiny-di', function() {
 
   function other() {
     return {other: true};
+  }
+
+  NeedsTestNS.$inject = ['test/other'];
+  function NeedsTestNS(other) {
+    return other;
   }
 
 });
