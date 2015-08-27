@@ -39,5 +39,7 @@
     "rimraf": "^2.4.2",
     "source-map-support": "^0.3.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "babel-runtime": "^5.8.20"
+  }
 }
