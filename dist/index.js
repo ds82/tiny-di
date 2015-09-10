@@ -93,14 +93,17 @@ var TinyDi = (function () {
 
   }, {
     key: 'getDefaultResolver',
-    value: function getDefaultResolver() {
+    value: function getDefaultResolver(req) {
+      req = req || require;
+      var APP_ROOT = path.dirname(require.main.filename);
+
       return function (file) {
-        var filePath = path.join(path.dirname(require.main.filename), file);
+        var filePath = path.join(APP_ROOT, file);
         try {
-          return require(filePath);
+          return req(filePath);
         } catch (error1) {
           try {
-            return require(file);
+            return req(file);
           } catch (error2) {
             this.logger('ERROR: Cannot load module', file);
             this.logger('tried to require `' + filePath + '` and `' + file + '`');
