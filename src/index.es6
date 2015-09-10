@@ -19,7 +19,7 @@ function escapeRegExp(string){
 
 class TinyDi {
   constructor() {
-
+    this.logger = console.log;
     this.resolving = [];
 
     this.bindings = {};
@@ -31,6 +31,9 @@ class TinyDi {
   //
   // PUBLIC DI API
   //
+  setLogger(logger) {
+    this.logger = logger;
+  }
 
   bind(key) {
     return new GenericBinder(this, key);
@@ -78,9 +81,9 @@ class TinyDi {
         try {
           return require(file);
         } catch (error2) {
-          console.log('ERROR: Cannot load module', file);
-          console.log('tried to require `' + filePath + '` and `' + file + '`');
-          console.log(error1, error2, error1.stack, error2.stack);
+          this.logger('ERROR: Cannot load module', file);
+          this.logger('tried to require `' + filePath + '` and `' + file + '`');
+          this.logger(error1, error2, error1.stack, error2.stack);
         }
       }
     };

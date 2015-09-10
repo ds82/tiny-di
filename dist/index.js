@@ -31,6 +31,7 @@ var TinyDi = (function () {
   function TinyDi() {
     _classCallCheck(this, TinyDi);
 
+    this.logger = console.log;
     this.resolving = [];
 
     this.bindings = {};
@@ -44,6 +45,11 @@ var TinyDi = (function () {
   //
 
   _createClass(TinyDi, [{
+    key: 'setLogger',
+    value: function setLogger(logger) {
+      this.logger = logger;
+    }
+  }, {
     key: 'bind',
     value: function bind(key) {
       return new _binderGeneric.GenericBinder(this, key);
@@ -96,9 +102,9 @@ var TinyDi = (function () {
           try {
             return require(file);
           } catch (error2) {
-            console.log('ERROR: Cannot load module', file);
-            console.log('tried to require `' + filePath + '` and `' + file + '`');
-            console.log(error1, error2, error1.stack, error2.stack);
+            this.logger('ERROR: Cannot load module', file);
+            this.logger('tried to require `' + filePath + '` and `' + file + '`');
+            this.logger(error1, error2, error1.stack, error2.stack);
           }
         }
       };
