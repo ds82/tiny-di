@@ -98,6 +98,7 @@ var TinyDi = (function () {
           } catch (error2) {
             console.log('ERROR: Cannot load module', file);
             console.log('tried to require `' + filePath + '` and `' + file + '`');
+            console.log(error1, error2, error1.stack, error2.stack);
           }
         }
       };
