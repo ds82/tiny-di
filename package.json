@@ -32,7 +32,7 @@
     "gulp-cli": "0.3.0",
     "gulp-jasmine": "2.1.0",
     "gulp-rename": "1.2.2",
-    "gulp-sourcemaps": "1.5.2",
+    "gulp-sourcemaps": "1.6.0",
     "istanbul": "0.3.21",
     "jasmine": "2.3.2",
     "proxyquire": "1.7.2",
