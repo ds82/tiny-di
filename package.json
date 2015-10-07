@@ -30,7 +30,7 @@
   "devDependencies": {
     "coveralls": "2.11.4",
     "eslint": "^1.6.0",
-    "eslint-config-ds82": "^1.0.0",
+    "eslint-config-ds82": "^2.1.0",
     "eslint-plugin-jasmine": "^1.4.0",
     "ghooks": "^0.3.2",
     "git-changelog": "0.1.8",
