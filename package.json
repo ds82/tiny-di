@@ -28,6 +28,7 @@
   "license": "MIT",
   "devDependencies": {
     "coveralls": "2.11.4",
+    "ghooks": "^0.3.2",
     "git-changelog": "0.1.8",
     "grunt": "0.4.5",
     "gulp": "3.9.0",
