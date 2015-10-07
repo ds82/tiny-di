@@ -46,9 +46,15 @@
     "proxyquire": "1.7.3",
     "rimraf": "2.4.3",
     "semantic-release": "^4.3.5",
-    "source-map-support": "0.3.2"
+    "source-map-support": "0.3.2",
+    "validate-commit-msg": "^1.0.0"
   },
   "dependencies": {
     "babel-runtime": "5.8.25"
+  },
+  "config": {
+    "ghooks": {
+      "commit-msg": "./node_modules/.bin/validate-commit-msg"
+    }
   }
 }
