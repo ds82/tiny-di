@@ -1,6 +1,5 @@
 {
   "name": "tiny-di",
-  "version": "0.3.1",
   "description": "A tini tiny dependency injection container for node/io.js applications",
   "main": "dist/index.js",
   "scripts": {
@@ -9,9 +8,13 @@
     "test": "istanbul cover jasmine",
     "test-travis": "istanbul cover jasmine && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "build": "gulp",
-    "watch": "gulp watch"
+    "watch": "gulp watch",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
-  "repository": "https://github.com/ds82/tiny-di.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ds82/tiny-di.git"
+  },
   "bugs": {
     "url": "https://github.com/ds82/tiny-di/issues"
   },
@@ -37,6 +40,7 @@
     "jasmine": "2.3.2",
     "proxyquire": "1.7.3",
     "rimraf": "2.4.3",
+    "semantic-release": "^4.3.5",
     "source-map-support": "0.3.2"
   },
   "dependencies": {
