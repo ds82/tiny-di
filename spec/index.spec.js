@@ -1,14 +1,10 @@
-'use strict';
-
 var tinyDi = require('../dist/');
 
 module.exports = 'tiny-di.spec';
 
 describe('tiny-di', function() {
 
-  var tiny;
-  var fakeLoader;
-  var Spy;
+  var tiny, fakeLoader, Spy;
 
   var FAKE_MAP = {
     'Fake': Fake,
@@ -131,16 +127,15 @@ describe('tiny-di', function() {
   it('should load deps from subdirs', function() {
     fakeLoader.and.returnValue(1);
     tiny.bind('fileAPI').load('extensions/fileAPI');
-    var blob = tiny.get('fileAPI');
+    tiny.get('fileAPI');
 
     expect(fakeLoader).toHaveBeenCalledWith('extensions/fileAPI');
   });
 
   it('should load deps from $inject-array', function() {
     Spy.$inject = ['Const1', 'Const2'];
-    var spy = tiny.get('Spy');
+    tiny.get('Spy');
 
-    var any = jasmine.any;
     expect(Spy).toHaveBeenCalledWith('Const1', 'Const2');
   });
 
@@ -305,13 +300,13 @@ describe('tiny-di', function() {
   }
 
   Dep1.$inject = ['Dep2'];
-  function Dep1(dep2) {}
+  function Dep1() {}
 
   Dep2.$inject = ['Dep3'];
-  function Dep2(dep3) {}
+  function Dep2() {}
 
   Dep3.$inject = ['Dep1'];
-  function Dep3(dep1) {}
+  function Dep3() {}
 
   function other() {
     return {other: true};

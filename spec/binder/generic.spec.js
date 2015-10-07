@@ -1,5 +1,3 @@
-'use strict';
-
 var proxy    = require('proxyquire').noCallThru().noPreserveCache();
 
 var lazyStub = {};
@@ -12,8 +10,7 @@ var UUT      = proxy('../../dist/binder/generic', {
 proxy.callThru();
 
 describe('binder/generic', function() {
-  var uut;
-  var injectorSpy, key;
+  var uut, injectorSpy, key;
 
   beforeEach(function() {
     lazyStub.LazyBinding.calls.reset();

@@ -1,5 +1,3 @@
-'use strict';
-
 var UUT = require('../dist/base').AbstractBase;
 
 describe('base.es6', function() {

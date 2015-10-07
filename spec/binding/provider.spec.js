@@ -1,11 +1,8 @@
-'use strict';
-
 var UUT = require('../../dist/binding/provider').ProviderBinding;
 
 describe('binding/provider', function() {
 
-  var uut;
-  var injectorStub, providerFnStub, key;
+  var uut, injectorStub, providerFnStub, key;
 
   beforeEach(function() {
     injectorStub = jasmine.createSpyObj('injector', [

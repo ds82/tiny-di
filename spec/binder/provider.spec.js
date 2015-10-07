@@ -1,4 +1,3 @@
-'use strict';
 
 var proxy = require('proxyquire').noCallThru().noPreserveCache();
 
@@ -13,8 +12,7 @@ proxy.callThru();
 
 describe('binder/provider', function() {
 
-  var uut;
-  var injectorStub, key;
+  var uut, injectorStub, key;
 
   beforeEach(function() {
     injectorStub = jasmine.createSpyObj('injector', [

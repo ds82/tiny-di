@@ -1,5 +1,3 @@
-'use strict';
-
 var tiny = require('../dist/')();
 
 function run() {

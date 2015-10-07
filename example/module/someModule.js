@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports = Module;
 
 Module.$inject = ['lib/somelib'];
