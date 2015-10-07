@@ -5,6 +5,7 @@
   "scripts": {
     "prepublish": "npm run clean && npm run build && npm test",
     "clean": "rimraf dist",
+    "lint": "eslint src spec example gulpfile.js",
     "test": "istanbul cover jasmine",
     "test-travis": "istanbul cover jasmine && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "build": "gulp",
@@ -28,6 +29,9 @@
   "license": "MIT",
   "devDependencies": {
     "coveralls": "2.11.4",
+    "eslint": "^1.6.0",
+    "eslint-config-ds82": "^1.0.0",
+    "eslint-plugin-jasmine": "^1.4.0",
     "ghooks": "^0.3.2",
     "git-changelog": "0.1.8",
     "grunt": "0.4.5",
