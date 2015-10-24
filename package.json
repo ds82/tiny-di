@@ -40,6 +40,6 @@
     "source-map-support": "0.3.2"
   },
   "dependencies": {
-    "babel-runtime": "5.8.25"
+    "babel-runtime": "5.8.29"
   }
 }
