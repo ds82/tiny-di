@@ -4,6 +4,48 @@ var tinyDi = require('../dist/');
 
 module.exports = 'tiny-di.spec';
 
+Fake.$inject = [];
+function Fake() {
+  return Fake;
+}
+
+AnotherFake.$inject = [];
+function AnotherFake() {
+  return AnotherFake;
+}
+
+ClassFake.$inject = {};
+function ClassFake() {
+  if (!(this instanceof ClassFake)) { return false; }
+}
+
+FakeWithDep.$inject = ['Fake'];
+function FakeWithDep(Fake) {
+  return Fake;
+}
+
+Dep1.$inject = ['Dep2'];
+function Dep1(dep2) {}
+
+Dep2.$inject = ['Dep3'];
+function Dep2(dep3) {}
+
+Dep3.$inject = ['Dep1'];
+function Dep3(dep1) {}
+
+function other() {
+  return {other: true};
+}
+
+NeedsTestNS.$inject = ['test/other'];
+function NeedsTestNS(other) {
+  return other;
+}
+
+var ES6DefaultExport = {
+  default: Fake
+};
+
 describe('tiny-di', function() {
 
   var tiny;
@@ -23,7 +65,8 @@ describe('tiny-di', function() {
     'other': other(),
     'some': Fake,
     'some/other': Fake,
-    'some/foo': NeedsTestNS
+    'some/foo': NeedsTestNS,
+    'ES6DefaultExport': ES6DefaultExport
   };
 
   beforeEach(function() {
@@ -280,46 +323,19 @@ describe('tiny-di', function() {
     });
   });
 
+  describe('es6', function() {
+
+    it('should work with es6 default export', function() {
+      var result = tiny.get('ES6DefaultExport');
+      expect(result).toEqual(Fake);
+    });
+
+  });
+
   function resolveByFakeMap(what) {
     return FAKE_MAP[what];
   }
 
-  Fake.$inject = [];
-  function Fake() {
-    return Fake;
-  }
 
-  AnotherFake.$inject = [];
-  function AnotherFake() {
-    return AnotherFake;
-  }
-
-  ClassFake.$inject = {};
-  function ClassFake() {
-    if (!(this instanceof ClassFake)) { return false; }
-  }
-
-  FakeWithDep.$inject = ['Fake'];
-  function FakeWithDep(Fake) {
-    return Fake;
-  }
-
-  Dep1.$inject = ['Dep2'];
-  function Dep1(dep2) {}
-
-  Dep2.$inject = ['Dep3'];
-  function Dep2(dep3) {}
-
-  Dep3.$inject = ['Dep1'];
-  function Dep3(dep1) {}
-
-  function other() {
-    return {other: true};
-  }
-
-  NeedsTestNS.$inject = ['test/other'];
-  function NeedsTestNS(other) {
-    return other;
-  }
 
 });
