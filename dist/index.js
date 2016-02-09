@@ -177,6 +177,9 @@ var TinyDi = (function () {
     value: function apply(fn, env, that) {
       var self = this;
 
+      // support es6 default exports
+      fn = fn['default'] ? fn['default'] : fn;
+
       if (fn && fn.$inject && typeof fn === 'function') {
         var isArray = Array.isArray(fn.$inject);
         var rawArgs = isArray ? fn.$inject : fn.$inject.deps || [];
