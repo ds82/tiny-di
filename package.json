@@ -22,6 +22,9 @@
     "guice"
   ],
   "author": "Dennis Saenger <npm15@mail.ds82.de>",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "license": "MIT",
   "devDependencies": {
     "coveralls": "2.11.4",
