@@ -86,7 +86,7 @@ class TinyDi {
         } catch (error2) {
           this.logger('ERROR: Cannot load module', file);
           this.logger('tried to require `' + filePath + '` and `' + file + '`');
-          this.logger(error1, error2, error1.stack, error2.stack);
+          this.logger(error1, error2, error1.stack.split('\n'), error2.stack.split('\n'));
         }
       }
     };
