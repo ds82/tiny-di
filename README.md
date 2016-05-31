@@ -93,6 +93,31 @@ function Module(app, something, another) {
 
 look at the `example`-folder for a simple howto
 
+# usage with typescript
+
+import the definition file
+```javascript
+/// <reference path="../node_modules/tiny-di/tiny-di.d.ts" />
+```
+
+import tiny-di and do some magic stuff
+```javascript
+import tinyDi = require('tiny-di');
+let injector = new tinyDi();
+```
+
+modules which use the $inject configuration have to inherit from TinyDiInjectableBase
+```javascript
+import TinyDiInjectableBase from 'tiny-di/dist/injectable';
+
+export default class MyModule extends TinyDiInjectableBase {}
+MyModule.$inject = {
+  deps: [],
+  callAs: 'class'
+};
+```
+
+
 # develop
 
 ```javascript

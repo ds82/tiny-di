@@ -8,7 +8,7 @@
     "clean": "rimraf dist",
     "test": "istanbul cover jasmine",
     "test-travis": "istanbul cover jasmine && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
-    "build": "gulp",
+    "build": "gulp && tsc",
     "watch": "gulp watch",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
@@ -42,7 +42,8 @@
     "proxyquire": "1.7.3",
     "rimraf": "2.4.3",
     "source-map-support": "0.3.2",
-    "semantic-release": "^4.3.5"
+    "semantic-release": "^4.3.5",
+    "typescript": "^1.8.10"
   },
   "dependencies": {
     "babel-runtime": "5.8.25"
