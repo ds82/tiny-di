@@ -26,6 +26,7 @@ class TinyDi {
     this.nsBindings = [];
 
     this.resolverFn = this.getDefaultResolver();
+
   }
 
   //
@@ -179,6 +180,16 @@ class TinyDi {
   }
 }
 
-module.exports = function() {
-  return new TinyDi();
-};
+export default () => new TinyDi();
+
+export function Inject(deps) {
+  return function (target) {
+    target.$inject = {
+      callAs: 'class',
+      deps: deps
+    };
+    return target;
+  }
+}
+
+global.Inject = global.Inject || Inject;

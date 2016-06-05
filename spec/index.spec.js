@@ -1,6 +1,6 @@
 'use strict';
 
-var tinyDi = require('../dist/');
+var tinyDi = require('../dist/').default;
 
 module.exports = 'tiny-di.spec';
 
