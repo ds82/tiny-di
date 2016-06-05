@@ -150,6 +150,7 @@ class TinyDi {
   apply(fn, env, that) {
     var self = this;
 
+    fn = fn.default || fn;
     if (fn && fn.$inject && typeof fn === 'function') {
       var isArray = Array.isArray(fn.$inject);
       var rawArgs = (isArray) ? fn.$inject : fn.$inject.deps || [];
