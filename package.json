@@ -41,7 +41,7 @@
     "jasmine": "2.4.1",
     "proxyquire": "1.7.3",
     "rimraf": "2.4.3",
-    "source-map-support": "0.3.2",
+    "source-map-support": "0.4.5",
     "semantic-release": "^4.3.5"
   },
   "dependencies": {
