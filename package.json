@@ -28,7 +28,7 @@
   "author": "Dennis Saenger <npm15@mail.ds82.de>",
   "license": "MIT",
   "devDependencies": {
-    "coveralls": "2.11.4",
+    "coveralls": "2.11.7",
     "git-changelog": "0.1.8",
     "grunt": "0.4.5",
     "gulp": "3.9.0",
