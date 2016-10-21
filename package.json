@@ -32,7 +32,7 @@
     "git-changelog": "0.1.8",
     "grunt": "0.4.5",
     "gulp": "3.9.0",
-    "gulp-babel": "5.2.1",
+    "gulp-babel": "6.1.2",
     "gulp-cli": "0.3.0",
     "gulp-jasmine": "2.1.0",
     "gulp-rename": "1.2.2",
