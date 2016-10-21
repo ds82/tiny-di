@@ -34,7 +34,7 @@
     "gulp": "3.9.0",
     "gulp-babel": "5.2.1",
     "gulp-cli": "0.3.0",
-    "gulp-jasmine": "2.1.0",
+    "gulp-jasmine": "2.2.1",
     "gulp-rename": "1.2.2",
     "gulp-sourcemaps": "1.5.2",
     "istanbul": "0.3.21",
