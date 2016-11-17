@@ -42,7 +42,7 @@
     "proxyquire": "1.7.3",
     "rimraf": "2.4.3",
     "source-map-support": "0.3.2",
-    "semantic-release": "^4.3.5"
+    "semantic-release": "^6.3.2"
   },
   "dependencies": {
     "babel-runtime": "5.8.25"
