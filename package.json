@@ -1,16 +1,37 @@
 {
   "name": "tiny-di",
   "description": "A tini tiny dependency injection container for node/io.js applications",
-  "version": "0.0.0",
+  "version": "0.0.0-development",
   "main": "dist/index.js",
   "scripts": {
     "prepublish": "npm run clean && npm run build && npm test",
     "clean": "rimraf dist",
-    "test": "istanbul cover jasmine",
+    "test": "jest",
     "test-travis": "istanbul cover jasmine && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
-    "build": "gulp",
-    "watch": "gulp watch",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "build": "babel src -d dist",
+    "watch": "babel src -d dist --watch",
+    "semantic-release": "semantic-release",
+    "travis-deploy-once": "travis-deploy-once"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "jsx",
+      "ts",
+      "tsx"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.(js|ts)?(x)",
+      "**/?(*.)+(spec|test).(js|ts)?(x)"
+    ],
+    "testPathIgnorePatterns": [
+      "<rootDir>/build/",
+      "<rootDir>/node_modules/",
+      "<rootDir>/dist/"
+    ],
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "babel-jest"
+    }
   },
   "repository": {
     "type": "git",
@@ -28,23 +49,25 @@
   "author": "Dennis Saenger <npm15@mail.ds82.de>",
   "license": "MIT",
   "devDependencies": {
-    "coveralls": "2.11.4",
+    "@babel/cli": "7.2.0",
+    "@babel/core": "7.2.0",
+    "@babel/plugin-proposal-class-properties": "7.2.1",
+    "@babel/plugin-proposal-function-bind": "7.2.0",
+    "@babel/plugin-proposal-object-rest-spread": "7.2.0",
+    "@babel/plugin-transform-modules-commonjs": "7.2.0",
+    "@babel/plugin-transform-react-constant-elements": "7.2.0",
+    "@babel/plugin-transform-runtime": "7.2.0",
+    "@babel/preset-env": "7.2.0",
+    "@babel/runtime": "7.2.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "23.6.0",
     "git-changelog": "0.1.8",
-    "grunt": "0.4.5",
-    "gulp": "3.9.0",
-    "gulp-babel": "5.2.1",
-    "gulp-cli": "0.3.0",
-    "gulp-jasmine": "2.1.0",
-    "gulp-rename": "1.2.2",
-    "gulp-sourcemaps": "1.5.2",
-    "istanbul": "0.3.21",
-    "jasmine": "2.4.1",
-    "proxyquire": "1.7.3",
+    "jest": "23.6.0",
     "rimraf": "2.4.3",
-    "source-map-support": "0.3.2",
-    "semantic-release": "^4.3.5"
+    "semantic-release": "15",
+    "travis-deploy-once": "^5.0.9"
   },
   "dependencies": {
-    "babel-runtime": "5.8.25"
+    "@babel/polyfill": "7.0.0"
   }
 }

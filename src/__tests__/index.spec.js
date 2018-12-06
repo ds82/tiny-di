@@ -1,6 +1,4 @@
-'use strict';
-
-var tinyDi = require('../dist/');
+const tinyDi = require('../');
 
 module.exports = 'tiny-di.spec';
 
@@ -16,7 +14,9 @@ function AnotherFake() {
 
 ClassFake.$inject = {};
 function ClassFake() {
-  if (!(this instanceof ClassFake)) { return false; }
+  if (!(this instanceof ClassFake)) {
+    return false;
+  }
 }
 
 FakeWithDep.$inject = ['Fake'];
@@ -34,7 +34,7 @@ Dep3.$inject = ['Dep1'];
 function Dep3(dep1) {}
 
 function other() {
-  return {other: true};
+  return { other: true };
 }
 
 NeedsTestNS.$inject = ['test/other'];
@@ -47,26 +47,26 @@ var ES6DefaultExport = {
 };
 
 describe('tiny-di', function() {
-
   var tiny;
   var fakeLoader;
   var Spy;
 
   var FAKE_MAP = {
-    'Fake': Fake,
-    'AnotherFake': AnotherFake,
-    'FakeWithDep': FakeWithDep,
-    'Dep1': Dep1,
-    'Dep2': Dep2,
-    'Dep3': Dep3,
-    'ClassFake': ClassFake,
-    'Const1': 'Const1',
-    'Const2': 'Const2',
-    'other': other(),
-    'some': Fake,
+    Fake: Fake,
+    AnotherFake: AnotherFake,
+    FakeWithDep: FakeWithDep,
+    Dep1: Dep1,
+    Dep2: Dep2,
+    Dep3: Dep3,
+    ClassFake: ClassFake,
+    Const1: 'Const1',
+    Const2: 'Const2',
+    other: other(),
+    some: Fake,
     'some/other': Fake,
     'some/foo': NeedsTestNS,
-    'ES6DefaultExport': ES6DefaultExport
+    'some/deep/fake': Fake,
+    ES6DefaultExport: ES6DefaultExport
   };
 
   beforeEach(function() {
@@ -113,7 +113,9 @@ describe('tiny-di', function() {
     };
     stub.$inject = [];
 
-    tiny.setResolver(function() { return stub; });
+    tiny.setResolver(function() {
+      return stub;
+    });
     tiny.bind('stub').lazy('stub.test');
 
     expect(called).toEqual(false);
@@ -157,12 +159,16 @@ describe('tiny-di', function() {
   });
 
   it('should recognize circular deps using get()', function() {
-    var fn = function() { tiny.get('Dep1'); };
+    var fn = function() {
+      tiny.get('Dep1');
+    };
     expect(fn).toThrow(new Error('Circular dependency found; abort loading'));
   });
 
   it('should recognize circular deps using load()', function() {
-    var fn = function() { tiny.load('Dep1'); };
+    var fn = function() {
+      tiny.load('Dep1');
+    };
     expect(fn).toThrow(new Error('Circular dependency found; abort loading'));
   });
 
@@ -206,7 +212,6 @@ describe('tiny-di', function() {
   });
 
   describe('lazy', function() {
-
     it('should lazy load modules', function() {
       var spy = jasmine.createSpy('lazySpy');
 
@@ -227,11 +232,9 @@ describe('tiny-di', function() {
       expect(spy).toHaveBeenCalled();
       expect(fake).toEqual(111);
     });
-
   });
 
   describe('ns', function() {
-
     it('should consider generic namespaces', function() {
       fakeLoader.and.callFake(resolveByFakeMap);
 
@@ -249,6 +252,8 @@ describe('tiny-di', function() {
       expect(dep1).toEqual(FAKE_MAP.some);
       expect(fakeLoader).toHaveBeenCalledWith('some');
     });
+
+    // SHOULD WORK WITH DEEPER NS STRUCTURE
 
     it('should work with $inject', function() {
       tiny.ns('test').to('some');
@@ -276,15 +281,12 @@ describe('tiny-di', function() {
       expect(bar).toEqual(FAKE_MAP['some/foo/bar']);
       expect(fakeLoader).toHaveBeenCalledWith('some/foo/bar');
     });
-
   });
 
   describe('provide-by', function() {
-
     it('should return returnValue of providerFn', function() {
-
       var spy = jasmine.createSpy('provider');
-      var someEnv = {foo:1, bar:2};
+      var someEnv = { foo: 1, bar: 2 };
 
       tiny.provide('byProvider').by(spy);
 
@@ -305,11 +307,9 @@ describe('tiny-di', function() {
       };
       expect(spy).toHaveBeenCalledWith(expectedEnv, tiny, 'Fake');
     });
-
   });
 
   describe('get', function() {
-
     it('should return single instance if called with string-parameter', function() {
       var test = tiny.get('Fake');
       expect(test).toEqual(Fake);
@@ -324,18 +324,13 @@ describe('tiny-di', function() {
   });
 
   describe('es6', function() {
-
     it('should work with es6 default export', function() {
       var result = tiny.get('ES6DefaultExport');
       expect(result).toEqual(Fake);
     });
-
   });
 
   function resolveByFakeMap(what) {
     return FAKE_MAP[what];
   }
-
-
-
 });

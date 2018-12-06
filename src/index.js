@@ -2,18 +2,18 @@
  * tiny-di
  * @module tiny-di
  * @copyright Dennis Saenger <tiny-di-15@mail.ds82.de>
-*/
+ */
 
 var path = require('path');
 
-import {GenericBinder} from './binder/generic';
-import {PathBinder} from './binder/path';
-import {ProviderBinder} from './binder/provider';
+import { GenericBinder } from './binder/generic';
+import { PathBinder } from './binder/path';
+import { ProviderBinder } from './binder/provider';
 
-import {AbstractBinding} from './binding/abstract';
+import { AbstractBinding } from './binding/abstract';
 
 // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions
-function escapeRegExp(string){
+function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
@@ -50,9 +50,7 @@ class TinyDi {
       }, this);
     }
 
-    return (this.bindings[key]) ?
-      this.getBinding(key, env) :
-      this.lazy(key);
+    return this.bindings[key] ? this.getBinding(key, env) : this.lazy(key);
   }
 
   provide(key) {
@@ -86,7 +84,12 @@ class TinyDi {
         } catch (error2) {
           this.logger('ERROR: Cannot load module', file);
           this.logger('tried to require `' + filePath + '` and `' + file + '`');
-          this.logger(error1, error2, error1.stack.split('\n'), error2.stack.split('\n'));
+          this.logger(
+            error1,
+            error2,
+            error1.stack.split('\n'),
+            error2.stack.split('\n')
+          );
         }
       }
     };
@@ -97,7 +100,7 @@ class TinyDi {
       return key;
     }
 
-    var prefix = Array.find(this.nsBindings, prefix => {
+    var prefix = this.nsBindings.find(prefix => {
       var re = new RegExp('^' + escapeRegExp(prefix.ns) + '.*');
       return re.test(prefix.ns);
     });
@@ -114,7 +117,7 @@ class TinyDi {
   }
 
   setNsBinding(ns, dir) {
-    this.nsBindings.push({ns: ns, path: dir});
+    this.nsBindings.push({ ns: ns, path: dir });
   }
 
   load(key, what) {
@@ -124,7 +127,7 @@ class TinyDi {
 
     if (resolved) {
       this.markResolving(key);
-      var object = this.apply(resolved, {key: key, binding: what});
+      var object = this.apply(resolved, { key: key, binding: what });
       this.set(key, object);
       this.markResolved(key);
       return object;
@@ -150,18 +153,18 @@ class TinyDi {
     var self = this;
 
     // support es6 default exports
-    fn = (fn.default) ? fn.default : fn;
+    fn = fn.default ? fn.default : fn;
 
     if (fn && fn.$inject && typeof fn === 'function') {
       var isArray = Array.isArray(fn.$inject);
-      var rawArgs = (isArray) ? fn.$inject : fn.$inject.deps || [];
+      var rawArgs = isArray ? fn.$inject : fn.$inject.deps || [];
 
       var returnAsClass = !isArray && fn.$inject.callAs === 'class';
       var argumentList = rawArgs.map(arg => self.get(arg, env), this);
 
-      return returnAsClass ?
-        new (Function.prototype.bind.apply(fn, [null].concat(argumentList)))() :
-        fn.apply(that, argumentList);
+      return returnAsClass
+        ? new (Function.prototype.bind.apply(fn, [null].concat(argumentList)))()
+        : fn.apply(that, argumentList);
     }
     return fn;
   }
@@ -178,7 +181,7 @@ class TinyDi {
   }
 
   isCircularDep(key) {
-    return (this.resolving.indexOf(key) > -1);
+    return this.resolving.indexOf(key) > -1;
   }
 }
 

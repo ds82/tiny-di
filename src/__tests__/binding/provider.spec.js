@@ -1,20 +1,19 @@
 'use strict';
 
-var UUT = require('../../dist/binding/provider').ProviderBinding;
+const { ProviderBinding } = require('../../binding/provider');
 
 describe('binding/provider', function() {
-
   var uut;
   var injectorStub, providerFnStub, key;
 
   beforeEach(function() {
-    injectorStub = jasmine.createSpyObj('injector', [
-      'set'
-    ]);
-    providerFnStub = jasmine.createSpy('providerFn');
+    injectorStub = {
+      set: jest.fn()
+    };
+    providerFnStub = jest.fn();
     key = 'some';
 
-    uut = new UUT(injectorStub, key, providerFnStub);
+    uut = new ProviderBinding(injectorStub, key, providerFnStub);
   });
 
   it('should save the function as class variable', function() {
@@ -22,12 +21,9 @@ describe('binding/provider', function() {
   });
 
   describe('$get', function() {
-
     it('should call providerFn with correct paramters', function() {
       uut.$get('foo');
       expect(providerFnStub).toHaveBeenCalledWith('foo', injectorStub, key);
     });
   });
-
 });
-

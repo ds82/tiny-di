@@ -1,17 +1,15 @@
 'use strict';
 
-var UUT = require('../dist/base').AbstractBase;
+const { AbstractBase } = require('../base');
 
 describe('base.es6', function() {
-
   it('should take injector & key via constructor', function() {
-    var injector = jasmine.createSpy('injector');
-    var key = jasmine.createSpy(key);
+    var injector = jest.fn();
+    var key = jest.fn();
 
-    var uut = new UUT(injector, key);
+    var uut = new AbstractBase(injector, key);
 
     expect(uut.injector).toEqual(injector);
     expect(uut.key).toEqual(key);
   });
-
 });
