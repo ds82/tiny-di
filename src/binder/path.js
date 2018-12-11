@@ -5,10 +5,11 @@
  */
 'use strict';
 
-import {AbstractBase} from '../base';
+import { AbstractBase } from '../base';
 
 export class PathBinder extends AbstractBase {
   to(dir) {
+    // console.log('new pathBinding', this.key, dir);
     this.injector.setNsBinding(this.key, dir);
   }
 }

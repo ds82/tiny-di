@@ -253,8 +253,6 @@ describe('tiny-di', function() {
       expect(fakeLoader).toHaveBeenCalledWith('some');
     });
 
-    // SHOULD WORK WITH DEEPER NS STRUCTURE
-
     it('should work with $inject', function() {
       tiny.ns('test').to('some');
 
@@ -280,6 +278,24 @@ describe('tiny-di', function() {
 
       expect(bar).toEqual(FAKE_MAP['some/foo/bar']);
       expect(fakeLoader).toHaveBeenCalledWith('some/foo/bar');
+    });
+
+    it('should work with other extensions', () => {
+      tiny.ns('assets').to('/root/assets');
+      tiny.get('assets/foo/some.json');
+
+      expect(fakeLoader).toHaveBeenCalledWith('/root/assets/foo/some.json');
+    });
+
+    it('should work with similiar ns ids', () => {
+      tiny.ns('config').to('/root/config');
+      tiny.ns('conf').to('/root/conf');
+
+      tiny.get('config/foo');
+      expect(fakeLoader).toHaveBeenCalledWith('/root/config/foo');
+
+      tiny.get('conf/bar');
+      expect(fakeLoader).toHaveBeenCalledWith('/root/conf/bar');
     });
   });
 
