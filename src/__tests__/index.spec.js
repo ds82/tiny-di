@@ -212,6 +212,14 @@ describe('tiny-di', function() {
   });
 
   describe('load', () => {
+    it('should allow to overwrite bindings passed via opts', () => {
+      Spy.$inject = ['Const1', 'Const2'];
+
+      tiny.load('Spy', 'Spy', { bindings: { Const2: 'OVERWRITE' } });
+
+      expect(Spy).toHaveBeenCalledWith('Const1', 'OVERWRITE');
+    });
+
     it('it should allow to load a passend function', () => {
       const foo = c => [1, c];
       foo.$inject = ['Const1'];

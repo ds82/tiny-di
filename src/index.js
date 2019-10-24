@@ -43,14 +43,17 @@ class TinyDi {
     return new PathBinder(this, space);
   }
 
-  get(key, env) {
+  get(key, env, opts = {}) {
+    const _bindings = opts.bindings || {};
+    const bindings = { ...this.bindings, ..._bindings };
+
     if (Array.isArray(key)) {
       return key.map(function(_key) {
-        return this.get(_key, env);
+        return this.get(_key, env, opts);
       }, this);
     }
 
-    return this.bindings[key] ? this.getBinding(key, env) : this.lazy(key);
+    return bindings[key] ? this.getBinding(key, env, bindings) : this.lazy(key);
   }
 
   provide(key) {
@@ -120,37 +123,42 @@ class TinyDi {
     this.nsBindings.push({ ns: ns, path: dir });
   }
 
-  load(key, what) {
+  load(key, what, opts) {
     what = what || key;
     what = this.resolveKey(what);
     const resolved = typeof what === 'function' ? what : this.resolverFn(what);
 
     if (resolved) {
       this.markResolving(key);
-      var object = this.apply(resolved, { key: key, binding: what });
+      var object = this.apply(
+        resolved,
+        { key: key, binding: what },
+        null,
+        opts
+      );
       this.set(key, object);
       this.markResolved(key);
       return object;
     }
   }
 
-  lazy(key) {
+  lazy(key, opts) {
     if (this.isCircularDep(key)) {
       throw new Error('Circular dependency found; abort loading');
     }
-    return this.load(key, key);
+    return this.load(key, key, opts);
   }
 
-  getBinding(key, env) {
-    var binding = this.bindings[key];
+  getBinding(key, env, bindings = this.bindings) {
+    var binding = bindings[key];
     if (binding instanceof AbstractBinding) {
       return binding.$get(env);
     }
     return binding;
   }
 
-  apply(fn, env, that) {
-    var self = this;
+  apply(fn, env, that, opts) {
+    const self = this;
 
     // support es6 default exports
     fn = fn.default ? fn.default : fn;
@@ -160,7 +168,7 @@ class TinyDi {
       var rawArgs = isArray ? fn.$inject : fn.$inject.deps || [];
 
       var returnAsClass = !isArray && fn.$inject.callAs === 'class';
-      var argumentList = rawArgs.map(arg => self.get(arg, env), this);
+      var argumentList = rawArgs.map(arg => self.get(arg, env, opts), this);
 
       return returnAsClass
         ? new (Function.prototype.bind.apply(fn, [null].concat(argumentList)))()
