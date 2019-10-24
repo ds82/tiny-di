@@ -5,10 +5,10 @@ cache:
 notifications:
   email: false
 node_js:
+  - '12'
   - '10'
   - '9'
   - '8'
-  - '6'
 before_script:
   - yarn install --ignore-engines
 script:
