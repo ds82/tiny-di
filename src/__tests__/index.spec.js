@@ -211,6 +211,16 @@ describe('tiny-di', function() {
     expect(clazz instanceof ClassFake).toEqual(true);
   });
 
+  describe('load', () => {
+    it('it should allow to load a passend function', () => {
+      const foo = c => [1, c];
+      foo.$inject = ['Const1'];
+
+      const t = tiny.load(foo);
+      expect(t).toEqual([1, 'Const1']);
+    });
+  });
+
   describe('lazy', function() {
     it('should lazy load modules', function() {
       var spy = jasmine.createSpy('lazySpy');

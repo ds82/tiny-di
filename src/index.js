@@ -123,7 +123,7 @@ class TinyDi {
   load(key, what) {
     what = what || key;
     what = this.resolveKey(what);
-    var resolved = this.resolverFn(what);
+    const resolved = typeof what === 'function' ? what : this.resolverFn(what);
 
     if (resolved) {
       this.markResolving(key);
