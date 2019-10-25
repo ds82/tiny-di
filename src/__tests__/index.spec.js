@@ -85,6 +85,12 @@ describe('tiny-di', function() {
     expect(tiny.constructor.name).toEqual('TinyDi');
   });
 
+  it('should export a version prop', () => {
+    const tiny = tinyDi();
+    const version = require('../../package.json').version;
+    expect(tiny.version).toEqual(version);
+  });
+
   it('should resolve relative to main module', function() {
     tiny = tinyDi();
     tiny.setResolver(function(file) {

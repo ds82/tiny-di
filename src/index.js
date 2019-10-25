@@ -5,6 +5,7 @@
  */
 
 var path = require('path');
+const { version } = require('../package.json');
 
 import { GenericBinder } from './binder/generic';
 import { PathBinder } from './binder/path';
@@ -19,6 +20,7 @@ function escapeRegExp(string) {
 
 class TinyDi {
   constructor() {
+    this.version = version;
     this.logger = console.log;
     this.resolving = [];
 
