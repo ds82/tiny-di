@@ -250,6 +250,14 @@ describe('tiny-di', function() {
       expect(spy).toHaveBeenCalled();
       expect(fake).toEqual(111);
     });
+
+    it('should allow to overwrite bindings passed via opts', () => {
+      Spy.$inject = ['Const1', 'Const2'];
+
+      tiny.lazy('Spy', { bindings: { Const2: 'OVERWRITE' } });
+
+      expect(Spy).toHaveBeenCalledWith('Const1', 'OVERWRITE');
+    });
   });
 
   describe('ns', function() {
