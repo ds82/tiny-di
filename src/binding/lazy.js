@@ -5,16 +5,17 @@
  */
 'use strict';
 
-import {AbstractBinding} from './abstract';
+import { AbstractBinding } from './abstract';
 
 export class LazyBinding extends AbstractBinding {
-  constructor(injector, key, path) {
+  constructor(injector, key, path, opts) {
     super(injector, key);
     this.path = path;
+    this.opts = opts;
   }
 
   load() {
-    return this.injector.load(this.key, this.path);
+    return this.injector.load(this.key, this.path, this.opts);
   }
 
   $get() {

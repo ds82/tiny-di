@@ -5,17 +5,22 @@
  */
 'use strict';
 
-import {AbstractBase} from '../base';
-import {LazyBinding} from '../binding/lazy';
+import { AbstractBase } from '../base';
+import { LazyBinding } from '../binding/lazy';
+
+import { isFunction } from '../utils';
 
 export class GenericBinder extends AbstractBase {
-  to(object) {
-    this.injector.set(this.key, object);
+  to(object, opts) {
+    const value = isFunction(object)
+      ? this.injector.load(object, object, opts)
+      : object;
+    this.injector.set(this.key, value);
     return this.injector;
   }
 
-  lazy(path) {
-    var lazyBind = new LazyBinding(this.injector, this.key, path);
+  lazy(path, opts) {
+    var lazyBind = new LazyBinding(this.injector, this.key, path, opts);
     this.injector.set(this.key, lazyBind);
     return this.injector;
   }
@@ -28,4 +33,3 @@ export class GenericBinder extends AbstractBase {
     return this.injector.set(this.key, this.injector.get(file));
   }
 }
-

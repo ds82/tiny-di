@@ -235,6 +235,66 @@ describe('tiny-di', function() {
     });
   });
 
+  describe('bind', () => {
+    describe('to', () => {
+      it('should bind->to a function', () => {
+        const someFn = val => val + 100;
+        someFn.$inject = ['value'];
+
+        const tiny = tinyDi();
+        tiny.bind('value').to(10);
+
+        tiny.bind('test').to(someFn);
+
+        const result = tiny.get('test');
+        expect(result).toEqual(110);
+      });
+
+      it('should bind->to a function with custom binding overload', () => {
+        const someFn = val => val + 100;
+        someFn.$inject = ['value'];
+
+        const tiny = tinyDi();
+        tiny.bind('value').to(10);
+
+        tiny.bind('test').to(someFn, { bindings: { value: 20 } });
+
+        const result = tiny.get('test');
+        expect(result).toEqual(120);
+      });
+    });
+
+    describe('lazy', () => {
+      it('should bind->lazy to a function', () => {
+        const someFn = jest.fn(val => val + 100);
+        someFn.$inject = ['value'];
+
+        const tiny = tinyDi();
+        tiny.bind('value').to(10);
+
+        tiny.bind('test').lazy(someFn);
+
+        expect(someFn).not.toHaveBeenCalled();
+
+        const result = tiny.get('test');
+        expect(result).toEqual(110);
+      });
+
+      it('should bind->lazy a function with custom binding overload', () => {
+        const someFn = val => val + 100;
+        someFn.$inject = ['value'];
+
+        const tiny = tinyDi();
+        tiny.bind('value').to(10);
+
+        tiny.bind('test').lazy(someFn, { bindings: { value: 20 } });
+
+        const result = tiny.get('test');
+        expect(result).toEqual(120);
+      });
+    });
+  });
+
   describe('lazy', function() {
     it('should lazy load modules', function() {
       var spy = jasmine.createSpy('lazySpy');
