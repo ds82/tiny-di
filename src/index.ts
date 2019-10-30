@@ -13,22 +13,28 @@ import { ProviderBinder } from './binder/provider';
 
 import { AbstractBinding } from './binding/abstract';
 
+type TOpts = {
+  bindings?: {
+    [key: string]: any;
+  };
+};
+
 // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions
 function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-class TinyDi {
-  constructor() {
-    this.version = version;
-    this.logger = console.log;
-    this.resolving = [];
+class Injector {
+  version = version;
+  logger = console.log;
 
-    this.bindings = {};
-    this.nsBindings = [];
+  resolving = [];
+  bindings = {};
+  nsBindings = [];
 
-    this.resolverFn = this.getDefaultResolver();
-  }
+  resolverFn = this.getDefaultResolver();
+
+  constructor() {}
 
   //
   // PUBLIC DI API
@@ -45,7 +51,7 @@ class TinyDi {
     return new PathBinder(this, space);
   }
 
-  get(key, env, opts = {}) {
+  get(key, env, opts: TOpts = {}) {
     const _bindings = opts.bindings || {};
     const bindings = { ...this.bindings, ..._bindings };
 
@@ -77,12 +83,11 @@ class TinyDi {
   // HELPER
   //
 
-  getDefaultResolver(req) {
-    req = req || require;
-    var APP_ROOT = path.dirname(require.main.filename);
+  getDefaultResolver(req = require) {
+    const APP_ROOT = path.dirname(require.main.filename);
 
     return function(file) {
-      var filePath = path.join(APP_ROOT, file);
+      const filePath = path.join(APP_ROOT, file);
       try {
         return req(filePath);
       } catch (error1) {
@@ -197,6 +202,10 @@ class TinyDi {
   }
 }
 
+const init = () => new Injector();
+
+export default init;
+
 module.exports = function() {
-  return new TinyDi();
+  return new Injector();
 };

@@ -1,6 +1,6 @@
 'use strict';
 
-var lazyStub = {};
+var lazyStub: any = {};
 lazyStub.LazyBinding = jest.fn();
 
 jest.doMock('../../binding/lazy', () => lazyStub);

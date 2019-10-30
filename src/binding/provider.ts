@@ -5,16 +5,17 @@
  */
 'use strict';
 
-import {AbstractBinding} from './abstract';
+import { AbstractBinding } from './abstract';
 
 export class ProviderBinding extends AbstractBinding {
-  constructor(injector, key, fn) {
+  fn: any;
+
+  constructor(injector, key, _fn) {
     super(injector, key);
-    this.fn = fn;
+    this.fn = _fn;
   }
 
   $get(requestedBy) {
     return this.fn(requestedBy, this.injector, this.key);
   }
 }
-

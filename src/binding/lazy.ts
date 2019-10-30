@@ -8,10 +8,13 @@
 import { AbstractBinding } from './abstract';
 
 export class LazyBinding extends AbstractBinding {
-  constructor(injector, key, path, opts) {
+  path: any;
+  opts: any;
+
+  constructor(injector, key, _path, _opts) {
     super(injector, key);
-    this.path = path;
-    this.opts = opts;
+    this.path = _path;
+    this.opts = _opts;
   }
 
   load() {

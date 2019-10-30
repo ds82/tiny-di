@@ -5,11 +5,10 @@
  */
 'use strict';
 
-import {AbstractBase} from '../base';
+import { AbstractBase } from '../base';
 
 export class AbstractBinding extends AbstractBase {
-  $get() {
+  $get(env: any) {
     throw new Error('should be overriden by child class');
   }
 }
-

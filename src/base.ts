@@ -3,11 +3,13 @@
  * @module base
  * @copyright Dennis Saenger <tiny-di-15@mail.ds82.de>
  */
-'use strict';
 
 export class AbstractBase {
-  constructor(injector, key) {
-    this.injector = injector;
-    this.key = key;
+  injector: any;
+  key: any;
+
+  constructor(_injector, _key) {
+    this.injector = _injector;
+    this.key = _key;
   }
 }

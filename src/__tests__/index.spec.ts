@@ -1,5 +1,9 @@
 const tinyDi = require('../');
 
+type TFAKE_MAP = {
+  [key: string]: any;
+};
+
 module.exports = 'tiny-di.spec';
 
 Fake.$inject = [];
@@ -47,11 +51,11 @@ var ES6DefaultExport = {
 };
 
 describe('tiny-di', function() {
-  var tiny;
-  var fakeLoader;
-  var Spy;
+  let tiny;
+  let fakeLoader;
+  let Spy;
 
-  var FAKE_MAP = {
+  const FAKE_MAP: TFAKE_MAP = {
     Fake: Fake,
     AnotherFake: AnotherFake,
     FakeWithDep: FakeWithDep,
@@ -82,7 +86,7 @@ describe('tiny-di', function() {
 
   it('should create an instance if TinyDi when called as function', function() {
     var tiny = tinyDi();
-    expect(tiny.constructor.name).toEqual('TinyDi');
+    expect(tiny.constructor.name).toEqual('Injector');
   });
 
   it('should export a version prop', () => {
@@ -117,7 +121,7 @@ describe('tiny-di', function() {
       called = true;
       return stub;
     };
-    stub.$inject = [];
+    (stub as any).$inject = [];
 
     tiny.setResolver(function() {
       return stub;
@@ -200,7 +204,7 @@ describe('tiny-di', function() {
   });
 
   it('should instantiate fn as function if callAs=function', function() {
-    ClassFake.$inject = {
+    (ClassFake as any).$inject = {
       callAs: 'function'
     };
 
@@ -209,7 +213,7 @@ describe('tiny-di', function() {
   });
 
   it('should instantiate fn as class if callAs=class', function() {
-    ClassFake.$inject = {
+    (ClassFake as any).$inject = {
       callAs: 'class'
     };
 
@@ -267,7 +271,7 @@ describe('tiny-di', function() {
     describe('lazy', () => {
       it('should bind->lazy to a function', () => {
         const someFn = jest.fn(val => val + 100);
-        someFn.$inject = ['value'];
+        (someFn as any).$inject = ['value'];
 
         const tiny = tinyDi();
         tiny.bind('value').to(10);

@@ -1,4 +1,4 @@
-var providerStub = {};
+var providerStub: any = {};
 providerStub.ProviderBinding = jest.fn();
 
 jest.doMock('../../binding/provider', () => providerStub);
