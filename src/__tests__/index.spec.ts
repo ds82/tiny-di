@@ -96,7 +96,7 @@ describe('tiny-di', function() {
     tiny.setResolver(function(file) {
       return require(file);
     });
-    var pack = tiny.get('./index.spec.js');
+    var pack = tiny.get('./index.spec');
     expect(pack).toEqual(module.exports);
   });
 

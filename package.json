@@ -8,8 +8,8 @@
     "clean": "rimraf dist",
     "test": "jest",
     "test-travis": "istanbul cover jasmine && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
-    "build": "babel src -d dist",
-    "watch": "babel src -d dist --watch",
+    "build": "babel src -d dist --extensions '.ts'",
+    "watch": "babel src -d dist --extensions '.ts' --watch",
     "semantic-release": "semantic-release",
     "travis-deploy-once": "travis-deploy-once"
   },
