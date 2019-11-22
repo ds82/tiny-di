@@ -12,6 +12,18 @@ import { PathBinder } from './binder/path';
 import { ProviderBinder } from './binder/provider';
 
 import { AbstractBinding } from './binding/abstract';
+import {
+  isFunction,
+  pipeM,
+  map,
+  partition,
+  isPromise,
+  head,
+  resolveAll,
+  resolve
+} from './utils';
+
+export type TFunctionWithDependency = Function & { $inject: string[] };
 
 type TOpts = {
   bindings?: {
@@ -23,6 +35,14 @@ type TOpts = {
 function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
+
+const isResolveTrue = opts => opts && opts.resolve === true;
+
+const isResolveNotFalse = opts =>
+  Boolean(opts) === false || (opts && opts.resolve !== false);
+
+const toDependencyWithOpts = dependency =>
+  Array.isArray(dependency) ? dependency : [dependency, {}];
 
 class Injector {
   version = version;
@@ -43,8 +63,22 @@ class Injector {
     this.logger = logger;
   }
 
-  bind(key) {
+  private checkBindArgs(args) {
+    if (args.length > 0) {
+      throw new Error(
+        'You called bind*() with more than one parameter. You probably want to use something like `tiny.bind("x").to("y")`'
+      );
+    }
+  }
+
+  bind(key, ...args) {
+    this.checkBindArgs(args);
     return new GenericBinder(this, key);
+  }
+
+  bindSync(key, ...args) {
+    this.checkBindArgs(args);
+    return new GenericBinder(this, key, { sync: true });
   }
 
   ns(space) {
@@ -56,14 +90,27 @@ class Injector {
     const bindings = { ...this.bindings, ..._bindings };
 
     if (Array.isArray(key)) {
-      return key.map(function(_key) {
-        return this.get(_key, env, opts);
-      }, this);
+      return key.map(_key => this.get(_key, env, opts), this);
     }
 
-    return bindings[key] !== undefined
+    const value = bindings[key]
       ? this.getBinding(key, env, bindings)
-      : this.lazy(key);
+      : this.load(key, key, opts);
+
+    return Promise.resolve(value);
+  }
+
+  getSync(key, env?, opts: TOpts = {}) {
+    const _bindings = opts.bindings || {};
+    const bindings = { ...this.bindings, ..._bindings };
+
+    if (Array.isArray(key)) {
+      return key.map(_key => this.getSync(_key, env, opts), this);
+    }
+
+    return bindings[key]
+      ? this.getBindingSync(key, env, bindings)
+      : this.lazy(key, opts);
   }
 
   provide(key) {
@@ -133,15 +180,36 @@ class Injector {
   }
 
   load(key, what, opts) {
-    what = what || key;
-    what = this.resolveKey(what);
-    const resolved = typeof what === 'function' ? what : this.resolverFn(what);
+    const _what = this.resolveKey(what || key);
+    const resolved = isFunction(_what) ? _what : this.resolverFn(_what);
 
     if (resolved) {
       this.markResolving(key);
-      var object = this.apply(
+
+      return this.apply(
         resolved,
-        { key: key, binding: what },
+        { key: key, binding: _what },
+        null,
+        opts
+      ).then(object => {
+        this.set(key, object);
+        this.markResolved(key);
+        return object;
+      });
+    }
+
+    return Promise.reject(`load: could not load ${key}`);
+  }
+
+  loadSync(key, what, opts) {
+    const _what = this.resolveKey(what || key);
+    const resolved = isFunction(_what) ? _what : this.resolverFn(_what);
+
+    if (resolved) {
+      this.markResolving(key);
+      var object = this.applySync(
+        resolved,
+        { key: key, binding: _what },
         null,
         opts
       );
@@ -155,7 +223,7 @@ class Injector {
     if (this.isCircularDep(key)) {
       throw new Error('Circular dependency found; abort loading');
     }
-    return this.load(key, key, opts);
+    return this.loadSync(key, key, opts);
   }
 
   getBinding(key, env, bindings = this.bindings) {
@@ -166,7 +234,58 @@ class Injector {
     return binding;
   }
 
-  apply(fn, env, that, opts) {
+  getBindingSync(key, env, bindings = this.bindings) {
+    var binding = bindings[key];
+    if (binding instanceof AbstractBinding) {
+      return binding.$getSync(env);
+    }
+    return binding;
+  }
+
+  apply(_fn, env, that, opts) {
+    const self = this;
+    const fn = _fn.default ? _fn.default : _fn;
+
+    if (fn && fn.$inject && isFunction(fn)) {
+      const hasDeps = Boolean(fn.$inject) && Array.isArray(fn.$inject);
+      const deps = map(toDependencyWithOpts)(hasDeps ? fn.$inject : []);
+      const isClass = fn.$type && fn.$type === 'class';
+
+      return pipeM(
+        map(([dependencyId, dependencyOpts]) => [
+          self.get(dependencyId, env, opts),
+          { id: dependencyId, ...dependencyOpts }
+        ]),
+        map(([dependency, dependencyOpts]) => {
+          // const DEBUG = [
+          //   isResolveNotFalse(dependencyOpts),
+          //   isPromise(dependency)
+          // ];
+
+          // console.log('apply', dependencyOpts.id, DEBUG);
+
+          return isResolveNotFalse(dependencyOpts) && isPromise(dependency)
+            ? dependency.then(d => [d, dependencyOpts])
+            : [dependency, dependencyOpts];
+        }),
+        // x => {
+        //   const DEBUG = [x];
+        //   console.log('DEBUG', DEBUG);
+        //   return x;
+        // },
+        resolveAll,
+        map(head),
+        args => {
+          return isClass
+            ? new (Function.prototype.bind.apply(fn, [null].concat(args)))()
+            : fn.apply(that, args);
+        },
+        resolve
+      )(deps);
+    }
+  }
+
+  applySync(fn, env, that, opts) {
     const self = this;
 
     // support es6 default exports
@@ -176,8 +295,8 @@ class Injector {
       var isArray = Array.isArray(fn.$inject);
       var rawArgs = isArray ? fn.$inject : fn.$inject.deps || [];
 
-      var returnAsClass = !isArray && fn.$inject.callAs === 'class';
-      var argumentList = rawArgs.map(arg => self.get(arg, env, opts), this);
+      var returnAsClass = !isArray && fn.$type === 'class';
+      var argumentList = rawArgs.map(arg => self.getSync(arg, env, opts), this);
 
       return returnAsClass
         ? new (Function.prototype.bind.apply(fn, [null].concat(argumentList)))()

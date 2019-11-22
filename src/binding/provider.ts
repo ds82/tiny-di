@@ -18,4 +18,7 @@ export class ProviderBinding extends AbstractBinding {
   $get(requestedBy) {
     return this.fn(requestedBy, this.injector, this.key);
   }
+  $getSync(requestedBy) {
+    return this.fn(requestedBy, this.injector, this.key);
+  }
 }

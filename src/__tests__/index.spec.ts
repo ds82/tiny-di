@@ -1,4 +1,5 @@
-const tinyDi = require('../');
+import tinyDi, { TFunctionWithDependency } from '../index';
+import { Module } from 'module';
 
 type TFAKE_MAP = {
   [key: string]: any;
@@ -100,24 +101,24 @@ describe('tiny-di', function() {
     tiny.setResolver(function(file) {
       return require(file);
     });
-    var pack = tiny.get('./index.spec');
+    var pack = tiny.getSync('./index.spec');
     expect(pack).toEqual(module.exports);
   });
 
   it('bind->load should return module', function() {
     fakeLoader.and.returnValue(Fake);
-    var test = tiny.bind('test').load('fake');
+    var test = tiny.bind('test').loadSync('fake');
     expect(test).toEqual(Fake);
   });
 
   it('bind->to, get should return to object', function() {
-    tiny.bind('some').to(Fake);
-    expect(tiny.get('some')).toEqual(Fake);
+    tiny.bindSync('some').to(Fake);
+    expect(tiny.getSync('some')).toEqual(Fake);
   });
 
   it('bind->lazy, get should lazy load object', function() {
     var called = false;
-    var stub = function() {
+    const stub = () => {
       called = true;
       return stub;
     };
@@ -129,27 +130,27 @@ describe('tiny-di', function() {
     tiny.bind('stub').lazy('stub.test');
 
     expect(called).toEqual(false);
-    expect(tiny.get('stub.test')).toEqual(stub);
+    expect(tiny.getSync('stub.test')).toEqual(stub);
     expect(called).toEqual(true);
   });
 
   it('bind->load, should be bound to bind key', function() {
     fakeLoader.and.returnValue(Fake);
 
-    tiny.bind('test').load('some');
+    tiny.bind('test').loadSync('some');
 
     expect(tiny.hasBinding('test')).toBe(true);
-    expect(tiny.get('test')).toEqual(Fake);
+    expect(tiny.getSync('test')).toEqual(Fake);
     expect(fakeLoader.calls.count()).toBe(1);
   });
 
   it('bind->load should never require a file more than once', function() {
     fakeLoader.and.returnValue(Fake);
 
-    var test = tiny.bind('test').load('fake');
+    var test = tiny.bind('test').loadSync('fake');
 
-    var t1 = tiny.get('test');
-    var t2 = tiny.get('test');
+    var t1 = tiny.getSync('test');
+    var t2 = tiny.getSync('test');
 
     expect(test).toEqual(Fake);
     expect(t1).toEqual(Fake);
@@ -158,8 +159,8 @@ describe('tiny-di', function() {
   });
 
   it('auto-loaded deps should not be loaded more than once', function() {
-    var fake = tiny.get('Fake');
-    var fakeWithDep = tiny.get('FakeWithDep');
+    var fake = tiny.getSync('Fake');
+    var fakeWithDep = tiny.getSync('FakeWithDep');
 
     expect(fake).toEqual(Fake);
     expect(fakeWithDep).toEqual(Fake);
@@ -170,62 +171,58 @@ describe('tiny-di', function() {
 
   it('should recognize circular deps using get()', function() {
     var fn = function() {
-      tiny.get('Dep1');
+      tiny.getSync('Dep1');
     };
     expect(fn).toThrow(new Error('Circular dependency found; abort loading'));
   });
 
   it('should recognize circular deps using load()', function() {
     var fn = function() {
-      tiny.load('Dep1');
+      tiny.loadSync('Dep1');
     };
     expect(fn).toThrow(new Error('Circular dependency found; abort loading'));
   });
 
   it('should always return module.exports value of required file', function() {
-    var blob = tiny.get('other');
+    var blob = tiny.getSync('other');
     expect(blob).toEqual(other());
   });
 
   it('should load deps from subdirs', function() {
     fakeLoader.and.returnValue(1);
-    tiny.bind('fileAPI').load('extensions/fileAPI');
-    var blob = tiny.get('fileAPI');
+    tiny.bind('fileAPI').loadSync('extensions/fileAPI');
+    var blob = tiny.getSync('fileAPI');
 
     expect(fakeLoader).toHaveBeenCalledWith('extensions/fileAPI');
   });
 
   it('should load deps from $inject-array', function() {
     Spy.$inject = ['Const1', 'Const2'];
-    var spy = tiny.get('Spy');
+    var spy = tiny.getSync('Spy');
 
     var any = jasmine.any;
     expect(Spy).toHaveBeenCalledWith('Const1', 'Const2');
   });
 
-  it('should instantiate fn as function if callAs=function', function() {
-    (ClassFake as any).$inject = {
-      callAs: 'function'
-    };
+  it('should instantiate fn as function if $type = function', function() {
+    (ClassFake as any).$type = 'function';
 
-    var calledAsClass = tiny.get('ClassFake');
+    var calledAsClass = tiny.getSync('ClassFake');
     expect(calledAsClass).toEqual(false);
   });
 
-  it('should instantiate fn as class if callAs=class', function() {
-    (ClassFake as any).$inject = {
-      callAs: 'class'
-    };
+  it('should instantiate fn as class if $type = class', function() {
+    (ClassFake as any).$type = 'class';
 
-    var clazz = tiny.get('ClassFake');
+    var clazz = tiny.getSync('ClassFake');
     expect(clazz instanceof ClassFake).toEqual(true);
   });
 
-  describe('load', () => {
+  describe('loadSync', () => {
     it('should allow to overwrite bindings passed via opts', () => {
       Spy.$inject = ['Const1', 'Const2'];
 
-      tiny.load('Spy', 'Spy', { bindings: { Const2: 'OVERWRITE' } });
+      tiny.loadSync('Spy', 'Spy', { bindings: { Const2: 'OVERWRITE' } });
 
       expect(Spy).toHaveBeenCalledWith('Const1', 'OVERWRITE');
     });
@@ -234,7 +231,7 @@ describe('tiny-di', function() {
       const foo = c => [1, c];
       foo.$inject = ['Const1'];
 
-      const t = tiny.load(foo);
+      const t = tiny.loadSync(foo);
       expect(t).toEqual([1, 'Const1']);
     });
   });
@@ -246,11 +243,11 @@ describe('tiny-di', function() {
         someFn.$inject = ['value'];
 
         const tiny = tinyDi();
-        tiny.bind('value').to(10);
+        tiny.bindSync('value').to(10);
 
-        tiny.bind('test').to(someFn);
+        tiny.bindSync('test').to(someFn);
 
-        const result = tiny.get('test');
+        const result = tiny.getSync('test');
         expect(result).toEqual(110);
       });
 
@@ -259,11 +256,11 @@ describe('tiny-di', function() {
         someFn.$inject = ['value'];
 
         const tiny = tinyDi();
-        tiny.bind('value').to(10);
+        tiny.bindSync('value').to(10);
 
-        tiny.bind('test').to(someFn, { bindings: { value: 20 } });
+        tiny.bindSync('test').to(someFn, { bindings: { value: 20 } });
 
-        const result = tiny.get('test');
+        const result = tiny.getSync('test');
         expect(result).toEqual(120);
       });
     });
@@ -280,7 +277,7 @@ describe('tiny-di', function() {
 
         expect(someFn).not.toHaveBeenCalled();
 
-        const result = tiny.get('test');
+        const result = tiny.getSync('test');
         expect(result).toEqual(110);
       });
 
@@ -293,7 +290,7 @@ describe('tiny-di', function() {
 
         tiny.bind('test').lazy(someFn, { bindings: { value: 20 } });
 
-        const result = tiny.get('test');
+        const result = tiny.getSync('test');
         expect(result).toEqual(120);
       });
     });
@@ -314,7 +311,7 @@ describe('tiny-di', function() {
       tiny.bind('some').lazy('Lazy');
       expect(spy).not.toHaveBeenCalled();
 
-      var fake = tiny.get('some');
+      var fake = tiny.getSync('some');
 
       expect(fakeLoader).toHaveBeenCalled();
       expect(spy).toHaveBeenCalled();
@@ -335,7 +332,7 @@ describe('tiny-di', function() {
       fakeLoader.and.callFake(resolveByFakeMap);
 
       tiny.ns('test').to('some');
-      var other = tiny.get('test/other');
+      var other = tiny.getSync('test/other');
 
       expect(fakeLoader).toHaveBeenCalledWith('some/other');
       expect(other).toEqual(FAKE_MAP['some/other']);
@@ -343,7 +340,7 @@ describe('tiny-di', function() {
 
     it('should work with root of ns', function() {
       tiny.ns('test').to('some');
-      var dep1 = tiny.get('test');
+      var dep1 = tiny.getSync('test');
 
       expect(dep1).toEqual(FAKE_MAP.some);
       expect(fakeLoader).toHaveBeenCalledWith('some');
@@ -352,7 +349,7 @@ describe('tiny-di', function() {
     it('should work with $inject', function() {
       tiny.ns('test').to('some');
 
-      var fake = tiny.get('test/foo');
+      var fake = tiny.getSync('test/foo');
 
       expect(fake).toEqual(Fake);
     });
@@ -363,14 +360,14 @@ describe('tiny-di', function() {
       var dir = './test/blubb/blah';
       tiny.ns('test').to(dir);
 
-      tiny.get('test/some');
+      tiny.getSync('test/some');
       expect(fakeLoader).toHaveBeenCalledWith(dir + '/some');
     });
 
     it('should work with deep module', function() {
       tiny.ns('test').to('some');
 
-      var bar = tiny.get('test/foo/bar');
+      var bar = tiny.getSync('test/foo/bar');
 
       expect(bar).toEqual(FAKE_MAP['some/foo/bar']);
       expect(fakeLoader).toHaveBeenCalledWith('some/foo/bar');
@@ -378,7 +375,7 @@ describe('tiny-di', function() {
 
     it('should work with other extensions', () => {
       tiny.ns('assets').to('/root/assets');
-      tiny.get('assets/foo/some.json');
+      tiny.getSync('assets/foo/some.json');
 
       expect(fakeLoader).toHaveBeenCalledWith('/root/assets/foo/some.json');
     });
@@ -387,10 +384,10 @@ describe('tiny-di', function() {
       tiny.ns('config').to('/root/config');
       tiny.ns('conf').to('/root/conf');
 
-      tiny.get('config/foo');
+      tiny.getSync('config/foo');
       expect(fakeLoader).toHaveBeenCalledWith('/root/config/foo');
 
-      tiny.get('conf/bar');
+      tiny.getSync('conf/bar');
       expect(fakeLoader).toHaveBeenCalledWith('/root/conf/bar');
     });
   });
@@ -402,7 +399,7 @@ describe('tiny-di', function() {
 
       tiny.provide('byProvider').by(spy);
 
-      tiny.get('byProvider', someEnv);
+      tiny.getSync('byProvider', someEnv);
 
       expect(spy).toHaveBeenCalledWith(someEnv, tiny, 'byProvider');
     });
@@ -411,7 +408,7 @@ describe('tiny-di', function() {
       var spy = jasmine.createSpy('Fake');
       tiny.provide('Fake').by(spy);
 
-      tiny.get('FakeWithDep');
+      tiny.getSync('FakeWithDep');
 
       var expectedEnv = {
         key: 'FakeWithDep',
@@ -421,14 +418,14 @@ describe('tiny-di', function() {
     });
   });
 
-  describe('get', function() {
+  describe('getSync', function() {
     it('should return single instance if called with string-parameter', function() {
-      var test = tiny.get('Fake');
+      var test = tiny.getSync('Fake');
       expect(test).toEqual(Fake);
     });
 
     it('should return list of instances if called with list of strings', function() {
-      var list = tiny.get(['Fake', 'AnotherFake']);
+      var list = tiny.getSync(['Fake', 'AnotherFake']);
 
       expect(list[0]).toEqual(Fake);
       expect(list[1]).toEqual(AnotherFake);
@@ -437,50 +434,132 @@ describe('tiny-di', function() {
 
   describe('es6', function() {
     it('should work with es6 default export', function() {
-      var result = tiny.get('ES6DefaultExport');
+      var result = tiny.getSync('ES6DefaultExport');
       expect(result).toEqual(Fake);
     });
   });
 
-  describe('bind to constants', () => {
-    it('should allow to bind to a string', () => {
-      tiny.bind('FOO').to('foobar');
-      const value = tiny.get('FOO');
-      expect(value).toEqual('foobar');
+  describe('get', () => {
+    it('should get module by returning a promise', async () => {
+      const Foobar1: any = () => 1;
+      Foobar1.$inject = [];
+
+      tiny.bind('test').lazy(Foobar1);
+      const result = await tiny.get('test');
+
+      expect(result).toEqual(1);
     });
 
-    it('should allow to bind to a bool(true)', () => {
-      tiny.bind('FOO-TRUE').to(true);
-      const value = tiny.get('FOO-TRUE');
-      expect(value).toEqual(true);
+    it('should load a module with an async dependency', async () => {
+      const fakePromise = () => Promise.resolve(1);
+      fakePromise.$inject = [];
+
+      const localFake = f => f + 1;
+      localFake.$inject = [['fakePromise', { resolve: true }]];
+
+      tiny.bind('fakePromise').to(fakePromise);
+      const result = await tiny.load(localFake);
+
+      expect(result).toEqual(2);
     });
 
-    it('should allow to bind to a bool(false)', () => {
-      tiny.bind('FOO-FALSE').to(false);
-      const value = tiny.get('FOO-FALSE');
-      expect(value).toEqual(false);
+    it('should load a module with an async and a sync dependency', async () => {
+      const fakePromise = () => Promise.resolve(1);
+      fakePromise.$inject = [];
+
+      const fakeSync = () => 3;
+      fakeSync.$inject = [];
+
+      const localFake = (a, b) => {
+        return a + b;
+      };
+      localFake.$inject = [['fakePromise', { resolve: true }], 'fakeSync'];
+
+      tiny.bind('fakePromise').to(fakePromise);
+      tiny.bind('fakeSync').to(fakeSync);
+      const result = await tiny.load(localFake);
+
+      expect(result).toEqual(4);
     });
 
-    it('should allow to bind bool(true) and inject it to a function', () => {
-      tiny.bind('FOO-TRUE').to(true);
-      const a = x => x;
-      a.$inject = ['FOO-TRUE'];
+    it('should load a module with an async/resolved dependency and one returning a promise', async () => {
+      const d1 = () => Promise.resolve(1);
+      d1.$inject = [];
+      const d2 = () => Promise.resolve(2);
+      d2.$inject = [];
 
+      const localFake = (d1, d2) => d2.then(r => r + d1);
+      localFake.$inject = ['d1', ['d2', { resolve: false }]];
+
+      tiny.bind('d1').to(d1);
+      tiny.bind('d2').to(d2);
+
+      const result = await tiny.load(localFake);
+      expect(result).toEqual(3);
+    });
+
+    it('should load a module with transitive async dependencies', async () => {
+      const ModuleA = (b, c) => b + c;
+      ModuleA.$inject = ['ModuleB', 'ModuleC'];
+
+      const ModuleB = c => {
+        return c + 2;
+      };
+      ModuleB.$inject = ['ModuleC'];
+
+      const ModuleC = () => Promise.resolve(3);
+      ModuleC.$inject = [];
+
+      tiny.bind('ModuleC').to(ModuleC);
+      tiny.bind('ModuleB').to(ModuleB);
+
+      const result = await tiny.load(ModuleA);
+
+      expect(result).toEqual(8);
+    });
+
+    it('should work if one module wants the unresolved promise and one wants the resolved promise', async () => {
+      const main = (a, b, c) => a * b + c;
+      main.$inject = ['a', 'b', 'c'];
+
+      const a = b => b.then(_b => 10 + _b);
+      a.$inject = [['b', { resolve: false }]];
+
+      const b = () => Promise.resolve(20);
+      b.$inject = [];
+
+      const c = () => 50;
+      c.$inject = [];
+
+      tiny.bind('c').to(c);
+      tiny.bind('b').to(b);
       tiny.bind('a').to(a);
-      const value = tiny.get('a');
 
-      expect(value).toEqual(true);
+      const result = await tiny.load(main);
+
+      expect(result).toEqual(650);
     });
 
-    it('should allow to bind bool(false) and inject it to a function', () => {
-      tiny.bind('FOO-FALSE').to(false);
-      const a = x => x;
-      a.$inject = ['FOO-FALSE'];
+    it('should work lazy', async () => {
+      const main = (a, b) => {
+        return a * b;
+      };
+      main.$inject = ['a', 'b'];
 
-      tiny.bind('a').to(a);
-      const value = tiny.get('a');
+      const a = b => {
+        return 10 + b;
+      };
+      a.$inject = ['b'];
 
-      expect(value).toEqual(false);
+      const b = () => Promise.resolve(20);
+      b.$inject = [];
+
+      tiny.bind('a').lazy(a);
+      tiny.bind('b').lazy(b);
+
+      const result = await tiny.load(main);
+
+      expect(result).toEqual(600);
     });
   });
 

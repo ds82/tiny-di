@@ -14,7 +14,8 @@ describe('binder/generic', function() {
     // lazyStub.LazyBinding.calls.reset();
     jest.resetAllMocks();
     injectorSpy = {
-      set: jest.fn()
+      set: jest.fn(),
+      load: jest.fn(x => x)
     };
     key = 'some';
 
@@ -42,7 +43,12 @@ describe('binder/generic', function() {
 
       uut.lazy(path);
 
-      expect(lazyStub.LazyBinding).toHaveBeenCalledWith(injectorSpy, key, path);
+      expect(lazyStub.LazyBinding).toHaveBeenCalledWith(
+        injectorSpy,
+        key,
+        path,
+        undefined
+      );
     });
 
     it('should call set() on injector with key and LazyBinding', function() {
@@ -53,7 +59,7 @@ describe('binder/generic', function() {
       );
     });
 
-    it.only('should return the injector', function() {
+    it('should return the injector', function() {
       var result = uut.lazy('');
       expect(result).toEqual(injectorSpy);
     });

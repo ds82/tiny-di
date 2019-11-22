@@ -11,4 +11,7 @@ export class AbstractBinding extends AbstractBase {
   $get(env: any) {
     throw new Error('should be overriden by child class');
   }
+  $getSync(env: any) {
+    throw new Error('should be overriden by child class');
+  }
 }
