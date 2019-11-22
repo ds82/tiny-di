@@ -8,12 +8,12 @@ A tini tiny dependency injection container for node.js/io.js
 
 ```javascript
 // main.js
-var tiny = require('tiny-di')();
+const tiny = require('tiny-di')();
 
 // `require` the module now and bind it to `app`
 tiny.bind('app').load('lib/app');
 
-var something = require('something');
+const something = require('something');
 something.setup();
 
 // bind an existing object to `something`
@@ -25,7 +25,14 @@ tiny.bind('another').lazy('v1/another');
 
 // use namespaces
 tiny.ns('some/ns').to('./some/local/dir/');
-tiny.get('some/ns/foo'); // will require('./some/local/dir/foo')
+
+ // returns a promise with content of require('./some/local/dir/foo')
+ tiny.get('some/ns/foo');
+
+ // returns contents of require('./some/local/dir/foo')
+ // CARE: throws exception if some/ns/foo or a dependency requires a resolved injection
+ tiny.getSync('some/ns/foo');
+
 
 // use custom providers
 tiny.provide('Something').by(somethingProvider);
@@ -68,24 +75,32 @@ function Module(app, something, another) {
 
 ```
 
-## advanced $inject configuration
+## Advanced Injector configuration
 
 ```javascript
 // module
 module.exports = Module;
 
-Module.$inject = {
-  deps: ['app', 'something', 'another'],
-  callAs: 'class' // or: 'function' (default is 'function')
-};
+Module.$inject = ['app', 'something', 'another'];
+Module.$type = 'class';
 function Module(app, something, another) {
-
   // callAs='class' tells the injector to instantiate a new class
   // now you don't need to use the constructor pattern. yah!
 
   var self = this;
 
   // (this instanceof Module) -> true!
+}
+```
+
+### Support async dependencies
+
+```ts
+Something.$inject = [['one', { resolve: true }], 'two', 'three'];
+Something.$type = 'function'; // 'class'
+function Something(one, two, three) {
+  // the 'one' dependency is resolved before passed to Something
+  console.log(one);
 }
 ```
 
@@ -105,7 +120,6 @@ npm run watch
 
 Test coverage is quite good at the moment (see badge above).
 
-
 ```javascript
 npm install
 npm test
@@ -114,6 +128,3 @@ npm test
 # license
 
 MIT
-
-
-
