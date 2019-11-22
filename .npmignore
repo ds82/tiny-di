@@ -1,3 +1,16 @@
 src
 spec
 coverage
+
+yarn.lock
+.vscode/
+tsconfig.json
+.babelrc.js
+.eslintrc
+.nvmrc
+.travis*
+.yarnrc
+jest.config.js
+
+dist/__tests__/
+dist/**/__tests__/
