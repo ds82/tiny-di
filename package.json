@@ -59,9 +59,9 @@
     "@babel/preset-typescript": "7.6.0",
     "@types/jest": "24.0.21",
     "babel-core": "^7.0.0-bridge.0",
-    "babel-jest": "25.0.0",
+    "babel-jest": "24.9.0",
     "git-changelog": "0.1.8",
-    "jest": "25.0.0",
+    "jest": "24.9.0",
     "rimraf": "2.4.3",
     "semantic-release": "^15.13.27",
     "typescript": "3.6.4"
