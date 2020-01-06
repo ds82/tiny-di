@@ -154,7 +154,7 @@ class Injector {
     };
   }
 
-  resolveKey(key) {
+  resolveKey(key = '') {
     if (this.hasBinding(key)) {
       return key;
     }
