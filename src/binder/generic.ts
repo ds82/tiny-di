@@ -34,4 +34,8 @@ export class GenericBinder extends AbstractBase {
   loadSync(file) {
     return this.injector.set(this.key, this.injector.getSync(file));
   }
+
+  load(file) {
+    return this.injector.set(this.key, this.injector.get(file));
+  }
 }

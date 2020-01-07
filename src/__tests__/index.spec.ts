@@ -218,6 +218,33 @@ describe('tiny-di', function() {
     expect(clazz instanceof ClassFake).toEqual(true);
   });
 
+  describe('chaining', () => {
+    it('should be possible to chain bind, to, bind, to', () => {
+      const tiny = tinyDi();
+      tiny
+        .bind('v1')
+        .to(10)
+        .bind('v2')
+        .to(20);
+
+      expect(tiny.getSync('v1')).toEqual(10);
+      expect(tiny.getSync('v2')).toEqual(20);
+    });
+
+    it('should be possible to chain bind, to, bind, load', () => {
+      const tiny = tinyDi();
+
+      const localFake = f => f + 1;
+      localFake.$inject = [];
+
+      tiny
+        .bind('v1')
+        .to(10)
+        .bind('localFake')
+        .load(localFake);
+    });
+  });
+
   describe('loadSync', () => {
     it('should allow to overwrite bindings passed via opts', () => {
       Spy.$inject = ['Const1', 'Const2'];
