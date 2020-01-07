@@ -15,22 +15,6 @@
     "travis-deploy-once": "travis-deploy-once",
     "check-types": "tsc"
   },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "jsx",
-      "ts",
-      "tsx"
-    ],
-    "testPathIgnorePatterns": [
-      "<rootDir>/build/",
-      "<rootDir>/node_modules/",
-      "<rootDir>/dist/"
-    ],
-    "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "babel-jest"
-    }
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ds82/tiny-di.git"
