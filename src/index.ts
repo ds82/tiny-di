@@ -44,6 +44,8 @@ const isResolveNotFalse = opts =>
 const toDependencyWithOpts = dependency =>
   Array.isArray(dependency) ? dependency : [dependency, {}];
 
+const isThenable = thing => thing && thing.then && isFunction(thing.then);
+
 class Injector {
   version = version;
   logger = console.log;
@@ -180,22 +182,30 @@ class Injector {
   }
 
   load(key, what, opts) {
+    const _markResolved = object => {
+      this.set(key, object);
+      this.markResolved(key);
+      return object;
+    };
+
     const _what = this.resolveKey(what || key);
     const resolved = isFunction(_what) ? _what : this.resolverFn(_what);
 
     if (resolved) {
       this.markResolving(key);
 
-      return this.apply(
+      const value = this.apply(
         resolved,
         { key: key, binding: _what },
         null,
         opts
-      ).then(object => {
-        this.set(key, object);
-        this.markResolved(key);
-        return object;
-      });
+      );
+
+      /*
+        TODO: probably bad idea to return the plain value
+        if its no thenable .. better return Promise.resolve(value)?
+      */
+      return isThenable(value) ? value.then(_markResolved) : value;
     }
 
     return Promise.reject(`load: could not load ${key}`);
