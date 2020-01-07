@@ -163,12 +163,12 @@ class Injector {
 
     const prefix = this.nsBindings.find(prefix => {
       const re = new RegExp('^' + escapeRegExp(prefix.ns) + '/');
-      return key === prefix.ns || !!key.match(re);
+      return key === prefix.ns || !!String(key).match(re);
     });
 
     if (prefix) {
       const re = new RegExp('^' + escapeRegExp(prefix.ns));
-      return key.replace(re, prefix.path);
+      return String(key).replace(re, prefix.path);
     }
     return key;
   }
