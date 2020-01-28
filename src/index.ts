@@ -44,7 +44,8 @@ const isResolveNotFalse = opts =>
 const toDependencyWithOpts = dependency =>
   Array.isArray(dependency) ? dependency : [dependency, {}];
 
-const isThenable = thing => thing && thing.then && isFunction(thing.then);
+const isThenable = thing =>
+  thing !== undefined && thing.then && isFunction(thing.then);
 
 class Injector {
   version = version;
