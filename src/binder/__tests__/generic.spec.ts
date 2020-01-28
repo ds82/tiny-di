@@ -15,7 +15,8 @@ describe('binder/generic', function() {
     jest.resetAllMocks();
     injectorSpy = {
       set: jest.fn(),
-      load: jest.fn(x => x)
+      load: jest.fn(x => x),
+      loadSync: jest.fn(x => x)
     };
     key = 'some';
 
