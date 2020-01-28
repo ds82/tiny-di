@@ -100,7 +100,8 @@ class Injector {
       ? this.getBinding(key, env, bindings)
       : this.load(key, key, opts);
 
-    return Promise.resolve(value);
+    // ! TODO check if value should be resolved or not
+    return isThenable(value) ? Promise.resolve(value) : value;
   }
 
   getSync(key, env?, opts: TOpts = {}) {
@@ -175,7 +176,7 @@ class Injector {
   }
 
   hasBinding(key) {
-    return !!this.bindings[key];
+    return this.bindings[key] !== undefined;
   }
 
   setNsBinding(ns, dir) {
@@ -202,14 +203,14 @@ class Injector {
         opts
       );
 
-      /*
-        TODO: probably bad idea to return the plain value
-        if its no thenable .. better return Promise.resolve(value)?
-      */
-      return isThenable(value) ? value.then(_markResolved) : value;
+      return isThenable(value)
+        ? value.then(_markResolved)
+        : _markResolved(value);
+    } else {
+      return this.hasBinding(_what)
+        ? this.bindings[_what]
+        : Promise.reject(`load: could not load ${key}`);
     }
-
-    return Promise.reject(`load: could not load ${key}`);
   }
 
   loadSync(key, what, opts) {
@@ -268,22 +269,10 @@ class Injector {
           { id: dependencyId, ...dependencyOpts }
         ]),
         map(([dependency, dependencyOpts]) => {
-          // const DEBUG = [
-          //   isResolveNotFalse(dependencyOpts),
-          //   isPromise(dependency)
-          // ];
-
-          // console.log('apply', dependencyOpts.id, DEBUG);
-
           return isResolveNotFalse(dependencyOpts) && isPromise(dependency)
             ? dependency.then(d => [d, dependencyOpts])
             : [dependency, dependencyOpts];
         }),
-        // x => {
-        //   const DEBUG = [x];
-        //   console.log('DEBUG', DEBUG);
-        //   return x;
-        // },
         resolveAll,
         map(head),
         args => {
@@ -294,6 +283,9 @@ class Injector {
         resolve
       )(deps);
     }
+
+    // fallback
+    return fn;
   }
 
   applySync(fn, env, that, opts) {

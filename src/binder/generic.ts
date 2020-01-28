@@ -13,9 +13,7 @@ import { isFunction, isPromise } from '../utils';
 export class GenericBinder extends AbstractBase {
   to(object, _opts: any = {}) {
     const value = isFunction(object)
-      ? this.opts.sync === true
-        ? this.injector.loadSync(object, object, _opts)
-        : this.injector.load(object, object, _opts)
+      ? this.injector.load(object, object, _opts)
       : object;
     this.injector.set(this.key, value);
     return this.injector;
