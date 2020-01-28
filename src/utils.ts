@@ -21,5 +21,7 @@ export const isPromise = maybePromise =>
 
 export const head = list => (Array.isArray(list) ? list[0] : list);
 
-export const resolve = x => Promise.resolve(x);
-export const resolveAll = x => Promise.all(x);
+const find = (predicate, list) => list.find(predicate);
+
+export const resolve = x => (isPromise(x) ? Promise.resolve(x) : x);
+export const resolveAll = x => (find(isPromise, x) ? Promise.all(x) : x);
