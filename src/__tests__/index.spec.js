@@ -438,6 +438,48 @@ describe('tiny-di', function() {
     });
   });
 
+  describe('bind to constants', () => {
+    it('should allow to bind to a string', () => {
+      tiny.bind('FOO').to('foobar');
+      const value = tiny.get('FOO');
+      expect(value).toEqual('foobar');
+    });
+
+    it('should allow to bind to a bool(true)', () => {
+      tiny.bind('FOO-TRUE').to(true);
+      const value = tiny.get('FOO-TRUE');
+      expect(value).toEqual(true);
+    });
+
+    it('should allow to bind to a bool(false)', () => {
+      tiny.bind('FOO-FALSE').to(false);
+      const value = tiny.get('FOO-FALSE');
+      expect(value).toEqual(false);
+    });
+
+    it('should allow to bind bool(true) and inject it to a function', () => {
+      tiny.bind('FOO-TRUE').to(true);
+      const a = x => x;
+      a.$inject = ['FOO-TRUE'];
+
+      tiny.bind('a').to(a);
+      const value = tiny.get('a');
+
+      expect(value).toEqual(true);
+    });
+
+    it('should allow to bind bool(false) and inject it to a function', () => {
+      tiny.bind('FOO-FALSE').to(false);
+      const a = x => x;
+      a.$inject = ['FOO-FALSE'];
+
+      tiny.bind('a').to(a);
+      const value = tiny.get('a');
+
+      expect(value).toEqual(false);
+    });
+  });
+
   function resolveByFakeMap(what) {
     return FAKE_MAP[what];
   }

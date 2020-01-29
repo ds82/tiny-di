@@ -55,7 +55,9 @@ class TinyDi {
       }, this);
     }
 
-    return bindings[key] ? this.getBinding(key, env, bindings) : this.lazy(key);
+    return bindings[key] !== undefined
+      ? this.getBinding(key, env, bindings)
+      : this.lazy(key);
   }
 
   provide(key) {
