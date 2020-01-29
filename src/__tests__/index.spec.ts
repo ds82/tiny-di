@@ -590,6 +590,20 @@ describe('tiny-di', function() {
     });
   });
 
+  describe('bind to constants', () => {
+    it('should allow to bind to a string', () => {
+      tiny.bind('FOO').to('foobar');
+      const value = tiny.get('FOO');
+      expect(value).toEqual('foobar');
+    });
+
+    it('should allow to bind to a bool(true)', () => {
+      tiny.bind('FOO-TRUE').to(true);
+      const value = tiny.get('FOO');
+      expect(value).toEqual(true);
+    });
+  });
+
   function resolveByFakeMap(what) {
     return FAKE_MAP[what];
   }
