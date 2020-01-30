@@ -20,15 +20,14 @@ import {
   isPromise,
   head,
   resolveAll,
-  resolve
+  resolve,
+  mkBindingMap
 } from './utils';
 
 export type TFunctionWithDependency = Function & { $inject: string[] };
 
 type TOpts = {
-  bindings?: {
-    [key: string]: any;
-  };
+  bindings?: Map<unknown, any>;
 };
 
 // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions
@@ -50,7 +49,7 @@ class Injector {
   logger = console.log;
 
   resolving = [];
-  bindings = {};
+  bindings = mkBindingMap();
   nsBindings = [];
 
   resolverFn = this.getDefaultResolver();
@@ -87,14 +86,14 @@ class Injector {
   }
 
   get(key, env, opts: TOpts = {}) {
-    const _bindings = opts.bindings || {};
-    const bindings = { ...this.bindings, ..._bindings };
+    const _bindings = opts.bindings || mkBindingMap();
+    const bindings = mkBindingMap([this.bindings, _bindings]);
 
     if (Array.isArray(key)) {
       return key.map(_key => this.get(_key, env, opts), this);
     }
 
-    const value = bindings[key]
+    const value = bindings.has(key)
       ? this.getBinding(key, env, bindings)
       : this.load(key, key, opts);
 
@@ -103,14 +102,14 @@ class Injector {
   }
 
   getSync(key, env?, opts: TOpts = {}) {
-    const _bindings = opts.bindings || {};
-    const bindings = { ...this.bindings, ..._bindings };
+    const _bindings = opts.bindings || mkBindingMap();
+    const bindings = mkBindingMap([this.bindings, _bindings]);
 
     if (Array.isArray(key)) {
       return key.map(_key => this.getSync(_key, env, opts), this);
     }
 
-    return bindings[key]
+    return bindings.has(key)
       ? this.getBindingSync(key, env, bindings)
       : this.lazy(key, opts);
   }
@@ -124,7 +123,7 @@ class Injector {
   }
 
   set(key, object) {
-    this.bindings[key] = object;
+    this.bindings.set(key, object);
     return object;
   }
 
@@ -173,8 +172,8 @@ class Injector {
     return key;
   }
 
-  hasBinding(key) {
-    return this.bindings[key] !== undefined;
+  hasBinding(key, _bindings = this.bindings) {
+    return _bindings.has(key);
   }
 
   setNsBinding(ns, dir) {
@@ -206,7 +205,7 @@ class Injector {
         : _markResolved(value);
     } else {
       return this.hasBinding(_what)
-        ? this.bindings[_what]
+        ? this.bindings.get(_what)
         : Promise.reject(`load: could not load ${key}`);
     }
   }
@@ -237,7 +236,7 @@ class Injector {
   }
 
   getBinding(key, env, bindings = this.bindings) {
-    var binding = bindings[key];
+    const binding = bindings.get(key);
     if (binding instanceof AbstractBinding) {
       return binding.$get(env);
     }
@@ -245,7 +244,7 @@ class Injector {
   }
 
   getBindingSync(key, env, bindings = this.bindings) {
-    var binding = bindings[key];
+    const binding = bindings.get(key);
     if (binding instanceof AbstractBinding) {
       return binding.$getSync(env);
     }
