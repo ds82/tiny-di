@@ -25,3 +25,15 @@ const find = (predicate, list) => list.find(predicate);
 
 export const resolve = x => (isPromise(x) ? Promise.resolve(x) : x);
 export const resolveAll = x => (find(isPromise, x) ? Promise.all(x) : x);
+
+const safeEntries = (objectOrMap: Object | Map<unknown, any>) =>
+  objectOrMap instanceof Map
+    ? (objectOrMap as Map<unknown, any>).entries()
+    : Object.entries(objectOrMap as Object);
+
+export const mkBindingMap = (sourceMaps: Array<Map<unknown, any>> = []) =>
+  new Map<unknown, any>([
+    ...[].concat(
+      ...sourceMaps.map((m: Map<unknown, any>) => Array.from(safeEntries(m)))
+    )
+  ]);
