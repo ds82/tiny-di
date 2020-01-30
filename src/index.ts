@@ -36,8 +36,6 @@ function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-const isResolveTrue = opts => opts && opts.resolve === true;
-
 const isResolveNotFalse = opts =>
   Boolean(opts) === false || (opts && opts.resolve !== false);
 
@@ -66,7 +64,7 @@ class Injector {
     this.logger = logger;
   }
 
-  private checkBindArgs(args) {
+  private throwWhenArgsMissmatch(args) {
     if (args.length > 0) {
       throw new Error(
         'You called bind*() with more than one parameter. You probably want to use something like `tiny.bind("x").to("y")`'
@@ -75,12 +73,12 @@ class Injector {
   }
 
   bind(key, ...args) {
-    this.checkBindArgs(args);
+    this.throwWhenArgsMissmatch(args);
     return new GenericBinder(this, key);
   }
 
   bindSync(key, ...args) {
-    this.checkBindArgs(args);
+    this.throwWhenArgsMissmatch(args);
     return new GenericBinder(this, key, { sync: true });
   }
 
@@ -288,11 +286,11 @@ class Injector {
     return fn;
   }
 
-  applySync(fn, env, that, opts) {
+  applySync(_fn, env, that, opts) {
     const self = this;
 
     // support es6 default exports
-    fn = fn.default ? fn.default : fn;
+    const fn = _fn.default ? _fn.default : _fn;
 
     if (fn && fn.$inject && typeof fn === 'function') {
       var isArray = Array.isArray(fn.$inject);

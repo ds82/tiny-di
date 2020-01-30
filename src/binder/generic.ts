@@ -20,7 +20,7 @@ export class GenericBinder extends AbstractBase {
   }
 
   lazy(path, opts?) {
-    var lazyBind = new LazyBinding(this.injector, this.key, path, opts);
+    const lazyBind = new LazyBinding(this.injector, this.key, path, opts);
     this.injector.set(this.key, lazyBind);
     return this.injector;
   }
