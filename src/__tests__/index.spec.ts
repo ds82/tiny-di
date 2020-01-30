@@ -599,8 +599,34 @@ describe('tiny-di', function() {
 
     it('should allow to bind to a bool(true)', () => {
       tiny.bind('FOO-TRUE').to(true);
-      const value = tiny.get('FOO');
+      const value = tiny.get('FOO-TRUE');
       expect(value).toEqual(true);
+    });
+
+    it('should allow to bind to a bool(false)', () => {
+      tiny.bind('FOO-FALSE').to(false);
+      const value = tiny.get('FOO-FALSE');
+      expect(value).toEqual(false);
+    });
+
+    it('should inject a boolean(true) into a function', () => {
+      const boolVal = true;
+      tiny.bind('bool').to(boolVal);
+      const a = b => b;
+      a.$inject = ['bool'];
+
+      const result = tiny.load(a);
+      expect(result).toEqual(boolVal);
+    });
+
+    it('should inject a boolean(false) into a function', () => {
+      const boolVal = false;
+      tiny.bind('bool').to(boolVal);
+      const a = b => b;
+      a.$inject = ['bool'];
+
+      const result = tiny.load(a);
+      expect(result).toEqual(boolVal);
     });
   });
 
